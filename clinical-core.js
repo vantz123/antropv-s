@@ -1,38 +1,135 @@
+// ========================================================================
+// ==================== FUNGSI UTILITAS ====================================
+// ========================================================================
 
-
-if (p >= 100) return 5;
-const P = p / 100;
-const a = [-39.6968302866538, 220.946098424521, -275.928510446969,
-    138.357751867269, -30.6647980661472, 2.50662827745924];
-const b = [-54.4760987982241, 161.585836858041, -155.698979859887,
-    66.8013118877197, -13.2806815528857];
-const c = [-0.00778489400243029, -0.322396458041136, -2.40075827716184,
--2.54973253934373, 4.37466414146497, 2.93816398269878];
-const d = [0.00778469570904146, 0.32246712907004, 2.445134137143,
-    3.75440866190742];
-const plow = 0.02425;
-const phigh = 1 - plow;
-let q, r;
-if (P < plow) {
-    q = Math.sqrt(-2 * Math.log(P));
-    return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-        ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
-} else if (P <= phigh) {
-    q = P - 0.5;
-    r = q * q;
-    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
-        (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
-} else {
-    q = Math.sqrt(-2 * Math.log(1 - P));
-    return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
-        ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+// Cache untuk meningkatkan performa interpolasi LMS
+const __lmsCache = new WeakMap();
+function __getSortedKeys(data) {
+    if (__lmsCache.has(data)) return __lmsCache.get(data);
+    const keys = Object.keys(data).map(Number).sort((a, b) => a - b);
+    __lmsCache.set(data, keys);
+    return keys;
 }
+
+function getLMS(data, key) {
+    if (!data) return null;
+    const keys = __getSortedKeys(data);
+    if (data[key] !== undefined) return data[key];
+    if (key <= keys[0]) return data[keys[0]];
+    if (key >= keys[keys.length - 1]) return data[keys[keys.length - 1]];
+    // Binary search agar cepat & akurat
+    let lo = 0, hi = keys.length - 1;
+    while (hi - lo > 1) {
+        const mid = (lo + hi) >> 1;
+        if (keys[mid] <= key) lo = mid; else hi = mid;
+    }
+    const lower = keys[lo], upper = keys[hi];
+    const span = upper - lower;
+    const t = span === 0 ? 0 : (key - lower) / span;
+    const l = data[lower], u = data[upper];
+    return {
+        L: l.L + t * (u.L - l.L),
+        M: l.M + t * (u.M - l.M),
+        S: l.S + t * (u.S - l.S)
+    };
+}
+
+function getLMS_CDC(dataArr, age) {
+    if (!Array.isArray(dataArr) || dataArr.length === 0) return null;
+    if (age <= dataArr[0][0]) return { L: dataArr[0][1], M: dataArr[0][2], S: dataArr[0][3] };
+    if (age >= dataArr[dataArr.length - 1][0]) {
+        const last = dataArr[dataArr.length - 1];
+        return { L: last[1], M: last[2], S: last[3] };
+    }
+    // Binary search untuk segmen yang tepat
+    let lo = 0, hi = dataArr.length - 1;
+    while (hi - lo > 1) {
+        const mid = (lo + hi) >> 1;
+        if (dataArr[mid][0] <= age) lo = mid; else hi = mid;
+    }
+    const a = dataArr[lo], b = dataArr[hi];
+    const span = b[0] - a[0];
+    const t = span === 0 ? 0 : (age - a[0]) / span;
+    return {
+        L: a[1] + t * (b[1] - a[1]),
+        M: a[2] + t * (b[2] - a[2]),
+        S: a[3] + t * (b[3] - a[3])
+    };
+}
+
+// Hitung Z-Score LMS Cole dengan guard numeric
+function hitungZScore(X, L, M, S, applyWhoAdjustment = false) {
+    if (!Number.isFinite(X) || !Number.isFinite(M) || !Number.isFinite(S) || M <= 0 || S <= 0) return NaN;
+    if (X <= 0) return NaN;
+    let Z;
+    if (Math.abs(L) < 1e-6) {
+        Z = Math.log(X / M) / S;
+    } else {
+        const ratio = X / M;
+        if (ratio <= 0) return NaN;
+        Z = (Math.pow(ratio, L) - 1) / (L * S);
+    }
+    
+    if (applyWhoAdjustment && Math.abs(Z) >= 3) {
+        const sd2pos = M * Math.pow(1 + L * S * 2, 1 / L);
+        const sd2neg = M * Math.pow(1 + L * S * -2, 1 / L);
+        const sd3pos = M * Math.pow(1 + L * S * 3, 1 / L);
+        const sd3neg = M * Math.pow(1 + L * S * -3, 1 / L);
+        const sd23pos = sd3pos - sd2pos;
+        const sd23neg = sd2neg - sd3neg;
+        if (Z >= 3 && sd23pos !== 0) {
+            Z = 3 + (X - sd3pos) / sd23pos;
+        } else if (Z <= -3 && sd23neg !== 0) {
+            Z = -3 + (X - sd3neg) / sd23neg;
+        }
+    }
+    return Z;
+}
+
+// Konversi z-score ke nilai pengukuran (X) dengan guard
+function calculateXFromZ(Z, L, M, S) {
+    if (!Number.isFinite(Z) || !Number.isFinite(M) || !Number.isFinite(S) || M <= 0 || S <= 0) return NaN;
+    if (Math.abs(L) < 1e-6) return M * Math.exp(S * Z);
+    const inner = 1 + L * S * Z;
+    if (inner <= 0) return NaN;
+    return M * Math.pow(inner, 1 / L);
+}
+
+function percentileToZ(p) {
+    if (p <= 0) return -5;
+    if (p >= 100) return 5;
+    const P = p / 100;
+    const a = [-39.6968302866538, 220.946098424521, -275.928510446969,
+               138.357751867269, -30.6647980661472, 2.50662827745924];
+    const b = [-54.4760987982241, 161.585836858041, -155.698979859887,
+               66.8013118877197, -13.2806815528857];
+    const c = [-0.00778489400243029, -0.322396458041136, -2.40075827716184,
+               -2.54973253934373, 4.37466414146497, 2.93816398269878];
+    const d = [0.00778469570904146, 0.32246712907004, 2.445134137143,
+               3.75440866190742];
+    const plow = 0.02425;
+    const phigh = 1 - plow;
+    let q, r;
+    if (P < plow) {
+        q = Math.sqrt(-2*Math.log(P));
+        return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+               ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    } else if (P <= phigh) {
+        q = P - 0.5;
+        r = q*q;
+        return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
+               (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+    } else {
+        q = Math.sqrt(-2*Math.log(1-P));
+        return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+               ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+    }
 }
 
 function zToPercentile(z) {
     const t = 1 / (1 + 0.2316419 * Math.abs(z));
-    const d = 0.3989422804 * Math.exp(-z * z / 2);
-    let p = d * t * ((((1.330274429 * t - 1.821255978) * t + 1.781477937) * t - 0.356563782) * t + 0.319381530);
+    const d = 0.3989422804 * Math.exp(-z*z/2);
+    let p = d * t * ((((1.330274429*t - 1.821255978)*t + 1.781477937)*t - 0.356563782)*t + 0.319381530);
     if (z > 0) p = 1 - p;
     return p * 100;
 }
@@ -86,9 +183,9 @@ function findAgeForMedian_CDC(dataArr, target, options) {
 }
 
 function koreksiTinggi(tb, umur, posisi) {
-    if (!posisi) return tb;
-    if (posisi === 'terlentang' && umur >= 24) return tb - 0.7;
-    if (posisi === 'berdiri' && umur < 24) return tb + 0.7;
+    if(!posisi) return tb;
+    if(posisi==='terlentang' && umur>=24) return tb-0.7;
+    if(posisi==='berdiri' && umur<24) return tb+0.7;
     return tb;
 }
 
@@ -136,7 +233,7 @@ function hitungUmur() {
     }
 }
 
-function hitungMundurDOB(agePartsOverride) {
+function hitungMundurDOB(agePartsOverride){
     const umur = parseFloat(document.getElementById('umur_bulan').value);
     if (isNaN(umur) && !agePartsOverride) return;
 
@@ -272,7 +369,7 @@ function getRangeCDC(pct, type) {
         if (pct < 95) return `P85 - P95 (Overweight)`;
         return `≥ P95 (Obesity)`;
     }
-
+    
     if (type === 'stature') {
         if (pct < 3) return `< P3 (Short Stature)`;
         if (pct < 10) return `P3 - P10 (Normostature)`;
@@ -282,7 +379,7 @@ function getRangeCDC(pct, type) {
         if (pct <= 97) return `P90 - P97 (Tall)`;
         return `> P97 (Very Tall)`;
     }
-
+    
     // weight (BB/U)
     if (pct < 3) return `< P3 (Underweight)`;
     if (pct < 10) return `P3 - P10 (Normoweight)`;
@@ -293,36 +390,36 @@ function getRangeCDC(pct, type) {
     return `> P97 (Obesitas)`;
 }
 
-function classifyBBU_WHO(z) {
-    if (z < -3) return { txt: 'Severely Underweight', badge: 'status-severe' };
-    if (z < -2) return { txt: 'Underweight', badge: 'status-moderate' };
-    if (z <= 1) return { txt: 'Normoweight', badge: 'status-normal' };
-    if (z <= 2) return { txt: 'Risk Overweight', badge: 'status-risk' };
-    return { txt: 'Overweight', badge: 'status-obese' };
+function classifyBBU_WHO(z){
+    if(z<-3) return {txt:'Severely Underweight', badge:'status-severe'};
+    if(z<-2) return {txt:'Underweight', badge:'status-moderate'};
+    if(z<=1) return {txt:'Normoweight', badge:'status-normal'};
+    if(z<=2) return {txt:'Risk Overweight', badge:'status-risk'};
+    return {txt:'Overweight', badge:'status-obese'};
 }
 
-function classifyTBU_WHO(z) {
-    if (z < -3) return { txt: 'Severely Stunted', badge: 'status-severe' };
-    if (z < -2) return { txt: 'Stunted', badge: 'status-moderate' };
-    if (z <= 3) return { txt: 'Normoheight', badge: 'status-normal' };
-    return { txt: 'Tall Stature', badge: 'status-info' };
+function classifyTBU_WHO(z){
+    if(z<-3) return {txt:'Severely Stunted', badge:'status-severe'};
+    if(z<-2) return {txt:'Stunted', badge:'status-moderate'};
+    if(z<=3) return {txt:'Normoheight', badge:'status-normal'};
+    return {txt:'Tall Stature', badge:'status-info'};
 }
 
-function classifyBBTB_WHO(z) {
-    if (z < -3) return { txt: 'Gizi Buruk', badge: 'status-severe' };
-    if (z < -2) return { txt: 'Gizi Kurang', badge: 'status-moderate' };
-    if (z <= 2) return { txt: 'Gizi Baik', badge: 'status-normal' };
-    if (z <= 3) return { txt: 'Gizi Lebih', badge: 'status-risk' };
-    return { txt: 'Obesitas', badge: 'status-obese' };
+function classifyBBTB_WHO(z){
+    if(z<-3) return {txt:'Gizi Buruk', badge:'status-severe'};
+    if(z<-2) return {txt:'Gizi Kurang', badge:'status-moderate'};
+    if(z<=2) return {txt:'Gizi Baik', badge:'status-normal'};
+    if(z<=3) return {txt:'Gizi Lebih', badge:'status-risk'};
+    return {txt:'Obesitas', badge:'status-obese'};
 }
 
-function classifyIMTU_WHO(z) {
-    if (z < -3) return { txt: 'Severe Thinness', badge: 'status-severe' };
-    if (z < -2) return { txt: 'Thinness', badge: 'status-moderate' };
-    if (z <= 1) return { txt: 'Normal', badge: 'status-normal' };
-    if (z <= 2) return { txt: 'Overweight Risk', badge: 'status-risk' };
-    if (z <= 3) return { txt: 'Overweight', badge: 'status-moderate' };
-    return { txt: 'Obese', badge: 'status-obese' };
+function classifyIMTU_WHO(z){
+    if(z<-3) return {txt:'Severe Thinness', badge:'status-severe'};
+    if(z<-2) return {txt:'Thinness', badge:'status-moderate'};
+    if(z<=1) return {txt:'Normal', badge:'status-normal'};
+    if(z<=2) return {txt:'Overweight Risk', badge:'status-risk'};
+    if(z<=3) return {txt:'Overweight', badge:'status-moderate'};
+    return {txt:'Obese', badge:'status-obese'};
 }
 
 // Klasifikasi CDC berdasarkan PERSENTIL
@@ -350,46 +447,46 @@ function classifyCDC_Percentile(pct, type) {
 }
 
 // Klasifikasi CDC berdasarkan Z-SCORE
-function classifyCDC_Zscore(z, type) {
-    const low = type === 'stature' ? 'Stunted' : 'Underweight';
-    const sevLow = type === 'stature' ? 'Severely Stunted' : 'Severely Underweight';
-    const high = type === 'stature' ? 'Tall Stature' : 'Overweight';
-    if (z < -3) return { txt: sevLow, badge: 'status-severe' };
-    if (z < -2) return { txt: low, badge: 'status-moderate' };
-    if (z <= 2) return { txt: (type === 'stature' ? 'Normoheight' : 'Normoweight'), badge: 'status-normal' };
-    if (z <= 3) return { txt: high, badge: 'status-risk' };
-    return { txt: 'Obesitas', badge: 'status-obese' };
+function classifyCDC_Zscore(z, type){
+    const low = type==='stature' ? 'Stunted' : 'Underweight';
+    const sevLow = type==='stature' ? 'Severely Stunted' : 'Severely Underweight';
+    const high = type==='stature' ? 'Tall Stature' : 'Overweight';
+    if(z<-3) return {txt: sevLow, badge:'status-severe'};
+    if(z<-2) return {txt: low, badge:'status-moderate'};
+    if(z<=2) return {txt: (type==='stature'?'Normoheight':'Normoweight'), badge:'status-normal'};
+    if(z<=3) return {txt: high, badge:'status-risk'};
+    return {txt: 'Obesitas', badge:'status-obese'};
 }
 
 // %BBI CDC classification
-function classifyPBBI(pct) {
-    if (pct < 70) return { txt: 'Gizi Buruk', badge: 'status-severe' };
-    if (pct < 90) return { txt: 'Gizi Kurang', badge: 'status-moderate' };
-    if (pct <= 110) return { txt: 'Gizi Baik', badge: 'status-normal' };
-    if (pct <= 120) return { txt: 'Gizi Lebih', badge: 'status-risk' };
-    return { txt: 'Obesitas', badge: 'status-obese' };
+function classifyPBBI(pct){
+    if(pct<70) return {txt:'Gizi Buruk', badge:'status-severe'};
+    if(pct<90) return {txt:'Gizi Kurang', badge:'status-moderate'};
+    if(pct<=110) return {txt:'Gizi Baik', badge:'status-normal'};
+    if(pct<=120) return {txt:'Gizi Lebih', badge:'status-risk'};
+    return {txt:'Obesitas', badge:'status-obese'};
 }
 
-function classifyLILA(lila, umur) {
+function classifyLILA(lila, umur){
     if (umur >= 6 && umur < 60) {
-        if (lila < 11.5) return { txt: 'SAM (Severe Acute Malnutrition)', badge: 'status-severe' };
-        if (lila < 12.5) return { txt: 'MAM (Moderate Acute Malnutrition)', badge: 'status-moderate' };
-        return { txt: 'Normal', badge: 'status-normal' };
+        if (lila < 11.5) return {txt:'SAM (Severe Acute Malnutrition)', badge:'status-severe'};
+        if (lila < 12.5) return {txt:'MAM (Moderate Acute Malnutrition)', badge:'status-moderate'};
+        return {txt:'Normal', badge:'status-normal'};
     }
-    return lila < 23.5 ? { txt: 'KEK (Kurang Energi Kronis)', badge: 'status-moderate' }
-        : { txt: 'Normal', badge: 'status-normal' };
+    return lila < 23.5 ? {txt:'KEK (Kurang Energi Kronis)', badge:'status-moderate'}
+                       : {txt:'Normal', badge:'status-normal'};
 }
 
-function classifyLK(z) {
-    if (z < -2) return { txt: 'Mikrosefali', badge: 'status-moderate' };
-    if (z > 2) return { txt: 'Makrosefali', badge: 'status-moderate' };
-    return { txt: 'Normal', badge: 'status-normal' };
+function classifyLK(z){
+    if(z<-2) return {txt:'Mikrosefali', badge:'status-moderate'};
+    if(z>2) return {txt:'Makrosefali', badge:'status-moderate'};
+    return {txt:'Normal', badge:'status-normal'};
 }
 
 function formatUmur(bulan) {
     if (bulan === null || bulan === undefined || isNaN(bulan)) return '-';
-    const th = Math.floor(bulan / 12), bl = Math.round(bulan % 12);
-    return th > 0 ? `${th} th ${bl} bln` : `${bl} bln`;
+    const th=Math.floor(bulan/12), bl=Math.round(bulan%12);
+    return th>0?`${th} th ${bl} bln`:`${bl} bln`;
 }
 
 // ==================== BBI KLINIS (HA → P50 BB/U) ====================
@@ -827,27 +924,27 @@ function hitungBBIKlinis_fn(tb, gender, umurKron, mode) {
 // ========================================================================
 
 function hitungSemua() {
-    const gender = document.getElementById('gender').value;
-    const umurKron = parseFloat(document.getElementById('umur_bulan').value);
-    const umurKoreksi = parseFloat(document.getElementById('umur_koreksi').value);
-    const gestasi = parseFloat(document.getElementById('usia_gestasi').value);
+    const gender=document.getElementById('gender').value;
+    const umurKron=parseFloat(document.getElementById('umur_bulan').value);
+    const umurKoreksi=parseFloat(document.getElementById('umur_koreksi').value);
+    const gestasi=parseFloat(document.getElementById('usia_gestasi').value);
     const isPrematur = !isNaN(gestasi) && gestasi < 37 && umurKron < 24;
     // Gunakan umur koreksi jika prematur, else umur kronologis
     const umur = isPrematur ? umurKoreksi : umurKron;
 
-    const bbs = parseFloat(document.getElementById('bbs').value);
-    const tbRaw = parseFloat(document.getElementById('tb').value);
-    const posisi = document.getElementById('posisi').value;
-    const lk = parseFloat(document.getElementById('lk').value);
-    const lila = parseFloat(document.getElementById('lila').value);
-    const nama = document.getElementById('nama').value || 'Anonim';
+    const bbs=parseFloat(document.getElementById('bbs').value);
+    const tbRaw=parseFloat(document.getElementById('tb').value);
+    const posisi=document.getElementById('posisi').value;
+    const lk=parseFloat(document.getElementById('lk').value);
+    const lila=parseFloat(document.getElementById('lila').value);
+    const nama=document.getElementById('nama').value||'Anonim';
 
-    let html = `<h3 style="margin-bottom:15px;">📊 Hasil Antropometri</h3>`;
+    let html=`<h3 style="margin-bottom:15px;">📊 Hasil Antropometri</h3>`;
 
-    if (!gender || isNaN(umurKron) || umurKron < 0) {
-        html += `<div class="result-card" style="border-left-color:#dc3545;"><p>⚠️ Data tidak lengkap. Mohon isi jenis kelamin dan umur.</p></div>`;
-        document.getElementById('hasil-antropometri').innerHTML = html;
-        document.getElementById('hasil-antropometri').style.display = 'block';
+    if(!gender||isNaN(umurKron)||umurKron<0){
+        html+=`<div class="result-card" style="border-left-color:#dc3545;"><p>⚠️ Data tidak lengkap. Mohon isi jenis kelamin dan umur.</p></div>`;
+        document.getElementById('hasil-antropometri').innerHTML=html;
+        document.getElementById('hasil-antropometri').style.display='block';
         return;
     }
 
@@ -895,73 +992,82 @@ function hitungSemua() {
         pBBI = (bbs / bbiInfo.bbi) * 100;
     }
 
-    // ==================== RENDER HASIL (MINIMAL: BB/U, TB/U, IMT/U, LILA + RINGKASAN) ====================
-    // Helper: render card dengan rentang dinamis sesuai referensi
-    function renderCard(icon, title, refUsed, zScore, pct, classification, rangeText, extraInfo, refDetail) {
+    // ==================== RENDER HASIL ====================
+
+    // Helper: tentukan di antara dua garis kurva mana pasien berada
+    // Untuk WHO: garis SD -3,-2,-1,0,+1,+2,+3
+    // Untuk CDC: garis persentil P3,P5,P10,P25,P50,P75,P85,P90,P95,P97
+    function getCurveBand(z, isWHO, pct) {
+        if (isWHO) {
+            const bands = [-3, -2, -1, 0, 1, 2, 3];
+            const fmt = v => v === 0 ? '0 SD' : `${v > 0 ? '+' : ''}${v} SD`;
+            for (let i = 0; i < bands.length - 1; i++) {
+                if (z >= bands[i] && z < bands[i + 1]) {
+                    return `${fmt(bands[i])} s/d ${fmt(bands[i + 1])}`;
+                }
+            }
+            if (z < -3) return '< -3 SD';
+            return '> +3 SD';
+        } else {
+            const p = Number(pct);
+            const bands = [3, 5, 10, 25, 50, 75, 85, 90, 95, 97];
+            for (let i = 0; i < bands.length - 1; i++) {
+                if (p >= bands[i] && p < bands[i + 1]) {
+                    return `P${bands[i]} - P${bands[i + 1]}`;
+                }
+            }
+            if (p < 3) return '< P3';
+            return '> P97';
+        }
+    }
+
+    // Helper: render card ringkas — nilai + posisi kurva + status badge
+    function renderCard(icon, title, refUsed, zScore, pct, classification, _rangeText, extraInfo, _refDetail) {
         const refClass = refUsed === 'WHO' ? 'who' : 'cdc';
         const isWHO = refUsed === 'WHO';
+        // Nilai utama
         const primaryValue = isWHO
-            ? `${zScore.toFixed(2)} SD${pct !== undefined ? ` <span style="color:#888;font-size:0.75em;">(≈P${pct.toFixed(1)})</span>` : ''}`
-            : `P${pct.toFixed(1)} <span style="color:#888;font-size:0.75em;">(z=${zScore.toFixed(2)})</span>`;
-        const rangeLabel = isWHO ? 'Rentang (WHO Z-Score)' : 'Rentang (CDC Persentil)';
-        const detailText = refDetail ? ` | <strong>Sumber:</strong> ${refDetail}` : '';
-        return `<div class="result-card"><h3>${icon} ${title} <span class="ref-toggle ${refClass}">${refUsed}</span></h3>
-            <div class="zscore-value">${primaryValue}</div>
+            ? `${zScore.toFixed(2)} SD`
+            : `P${Number(pct).toFixed(1)}`;
+        // Nilai sekunder (sebaliknya)
+        const secondaryValue = isWHO
+            ? `P${zToPercentile(zScore).toFixed(1)}`
+            : `z = ${zScore.toFixed(2)}`;
+        // Posisi relatif kurva
+        const bandText = getCurveBand(zScore, isWHO, pct);
+        const extraHtml = extraInfo ? `<span style="color:var(--text-muted);font-size:0.8em;"> · ${extraInfo}</span>` : '';
+        return `<div class="result-card">
+            <h3>${icon} ${title} <span class="ref-toggle ${refClass}">${refUsed}</span></h3>
+            <div class="zscore-value" style="font-size:1.6em; font-weight:800; margin:6px 0;">${primaryValue} <span style="font-size:0.55em; font-weight:500; color:var(--text-muted);"> (${secondaryValue})</span></div>
             <span class="status-badge ${classification.badge}">${classification.txt}</span>
-            <div class="range-info"><strong>${rangeLabel}:</strong> ${rangeText}${extraInfo ? ' | ' + extraInfo : ''}${detailText}</div></div>`;
+            <div style="margin-top:8px; font-size:0.88em; color:var(--text-muted);">📍 ${bandText}${extraHtml}</div>
+        </div>`;
     }
 
     function renderBBTBMetricCard(hasil, pBBI) {
         if (hasil.bbtb_ref === 'WHO' && Number.isFinite(hasil.bbtb)) {
-            return renderCard('📊', 'BB/TB', 'WHO', hasil.bbtb, zToPercentile(hasil.bbtb), classifyBBTB_WHO(hasil.bbtb), getRangeWHO(hasil.bbtb, 'bbtb'), null, hasil.bbtb_ref_detail);
+            return renderCard('📊', 'BB/TB', 'WHO', hasil.bbtb, zToPercentile(hasil.bbtb), classifyBBTB_WHO(hasil.bbtb), '', null, null);
         }
         if (Number.isFinite(pBBI)) {
             const cls = classifyPBBI(pBBI);
-            return `<div class="result-card"><h3>📊 BB/TB <span class="ref-toggle cdc">CDC</span></h3>
-                <div class="zscore-value">${pBBI.toFixed(1)}%</div>
+            // Tentukan band %BBI sesuai batas klinis
+            let bandPBBI = '';
+            if (pBBI < 70) bandPBBI = 'di bawah 70% BBI (Gizi Buruk)';
+            else if (pBBI < 80) bandPBBI = 'antara 70–80% BBI';
+            else if (pBBI < 90) bandPBBI = 'antara 80–90% BBI';
+            else if (pBBI <= 110) bandPBBI = 'antara 90–110% BBI (Ideal)';
+            else if (pBBI <= 120) bandPBBI = 'antara 110–120% BBI';
+            else bandPBBI = 'di atas 120% BBI (Obesitas)';
+            return `<div class="result-card">
+                <h3>📊 BB/TB <span class="ref-toggle cdc">CDC</span></h3>
+                <div class="zscore-value" style="font-size:1.6em; font-weight:800; margin:6px 0;">${pBBI.toFixed(1)}% BBI</div>
                 <span class="status-badge ${cls.badge}">${cls.txt}</span>
-                <div class="range-info"><strong>Rentang (%BBI):</strong> &lt;70 buruk | 70-89 kurang | 90-110 baik | 111-120 risiko lebih | &gt;120 obesitas | <strong>Rumus:</strong> (BB/BBI) × 100%</div></div>`;
+                <div style="margin-top:8px; font-size:0.88em; color:var(--text-muted);">📍 ${bandPBBI}</div>
+            </div>`;
         }
         return '';
     }
 
-    // Compile SVG Progress Gauges (Z-Score Rings)
-    let gaugesHtml = '<div class="gauge-container">';
-    if (hasil.bbu !== undefined) {
-        let cls, pctVal;
-        if (hasil.bbu_ref === 'WHO') {
-            cls = classifyBBU_WHO(hasil.bbu);
-            pctVal = zToPercentile(hasil.bbu);
-        } else {
-            pctVal = hasil.bbu_pct !== undefined ? hasil.bbu_pct : zToPercentile(hasil.bbu);
-            cls = classifyCDC_Percentile(pctVal, 'weight');
-        }
-        gaugesHtml += drawZScoreGauge(hasil.bbu, pctVal, 'BB/U', hasil.bbu_ref, cls);
-    }
-    if (hasil.tbu !== undefined) {
-        let cls, pctVal;
-        if (hasil.tbu_ref === 'WHO') {
-            cls = classifyTBU_WHO(hasil.tbu);
-            pctVal = zToPercentile(hasil.tbu);
-        } else {
-            pctVal = hasil.tbu_pct !== undefined ? hasil.tbu_pct : zToPercentile(hasil.tbu);
-            cls = classifyCDC_Percentile(pctVal, 'stature');
-        }
-        gaugesHtml += drawZScoreGauge(hasil.tbu, pctVal, 'TB/U', hasil.tbu_ref, cls);
-    }
-    if (hasil.imtu !== undefined) {
-        let cls, pctVal;
-        if (hasil.imtu_ref === 'WHO') {
-            cls = classifyIMTU_WHO(hasil.imtu);
-            pctVal = zToPercentile(hasil.imtu);
-        } else {
-            pctVal = hasil.imtu_pct !== undefined ? hasil.imtu_pct : zToPercentile(hasil.imtu);
-            cls = classifyCDC_Percentile(pctVal, 'bmi');
-        }
-        gaugesHtml += drawZScoreGauge(hasil.imtu, pctVal, 'IMT/U', hasil.imtu_ref, cls);
-    }
-    gaugesHtml += '</div>';
-    html += gaugesHtml;
 
     // BB/U
     if (hasil.bbu !== undefined) {
@@ -1054,7 +1160,7 @@ function hitungSemua() {
 
     const ageVal = Number(umur);
     const activeRef = hasil.bbu_ref || (ageVal > 60 ? 'CDC' : 'WHO');
-
+    
     if (activeRef === 'WHO') {
         downloadHtml += `
             <button class="btn btn-secondary btn-sm" onclick="downloadChartBackground('bbu')">⚖️ Kurva BB/U</button>
@@ -1084,15 +1190,15 @@ function hitungSemua() {
     // ==================== SIMPAN HASIL ====================
     window.hasilSementara = {
         nama, gender, umur_bulan: umurKron, umur_dipakai: umur,
-        isPrematur, gestasi: isNaN(gestasi) ? null : gestasi, umurKoreksi: isPrematur ? umurKoreksi : null,
+        isPrematur, gestasi: isNaN(gestasi)?null:gestasi, umurKoreksi: isPrematur?umurKoreksi:null,
         tanggal_lahir: document.getElementById('dob').value || null,
         tanggal_ukur: document.getElementById('tanggal_ukur').value || null,
         umur_detail: window.lastAgeComputation || window.lastParsedAgeParts || null,
-        bbs: isNaN(bbs) ? null : bbs,
-        tb: isNaN(tb) ? null : tb,
-        tb_raw: isNaN(tbRaw) ? null : tbRaw,
-        lk: isNaN(lk) ? null : lk,
-        lila: isNaN(lila) ? null : lila,
+        bbs: isNaN(bbs)?null:bbs,
+        tb: isNaN(tb)?null:tb,
+        tb_raw: isNaN(tbRaw)?null:tbRaw,
+        lk: isNaN(lk)?null:lk,
+        lila: isNaN(lila)?null:lila,
         bbu: hasil.bbu, tbu: hasil.tbu, bbtb: hasil.bbtb, imtu: hasil.imtu, lku: hasil.lku,
         bbu_ref: hasil.bbu_ref, tbu_ref: hasil.tbu_ref, imtu_ref: hasil.imtu_ref, bbtb_ref: hasil.bbtb_ref,
         bbu_ref_detail: hasil.bbu_ref_detail || null,
@@ -1129,8 +1235,8 @@ function hitungSemua() {
     }
     if (bbiInfo && Number.isFinite(bbiInfo.bbi)) setValueIfExists('rda_bbi', bbiInfo.bbi.toFixed(2));
     if (!isNaN(bbs)) setValueIfExists('rda_bbs', bbs);
-    if (!isNaN(haMonth)) setValueIfExists('rda_umur', (haMonth / 12).toFixed(1));
-    else if (!isNaN(umur)) setValueIfExists('rda_umur', (umur / 12).toFixed(1));
+    if (!isNaN(haMonth)) setValueIfExists('rda_umur', (haMonth/12).toFixed(1));
+    else if (!isNaN(umur)) setValueIfExists('rda_umur', (umur/12).toFixed(1));
     var ayah = parseFloat((document.getElementById('tb_ayah') || {}).value);
     var ibu = parseFloat((document.getElementById('tb_ibu') || {}).value);
     if (!isNaN(ayah)) setValueIfExists('tpg_ayah', ayah);
@@ -1139,17 +1245,17 @@ function hitungSemua() {
         try { window.renderRDAAdjustmentTable(window.hasilSementara); } catch (e) { console.error('renderRDAAdjustmentTable error:', e); }
     }
 
-    document.getElementById('hasil-antropometri').innerHTML = html;
-    document.getElementById('hasil-antropometri').style.display = 'block';
+    document.getElementById('hasil-antropometri').innerHTML=html;
+    document.getElementById('hasil-antropometri').style.display='block';
 
     // Auto-refresh grafik setelah hitung (bug fix: supaya saat user buka tab grafik, langsung tampil)
     try {
         updateIndikatorGrafik();
-    } catch (e) { console.error('updateIndikatorGrafik error:', e); }
+    } catch(e) { console.error('updateIndikatorGrafik error:', e); }
 
     // Auto-hitung TPG jika data orang tua terisi
     if (!isNaN(ayah) && !isNaN(ibu)) {
-        try { hitungTPG(); } catch (e) { }
+        try { hitungTPG(); } catch(e) {}
     }
 }
 
@@ -1213,7 +1319,7 @@ function getStatusUtama(hasil, lilaCls, umur, waMonth, haMonth, umurKron, pBBI) 
             : (isStuntedSev ? 'Severely Stunted' : 'Stunted');
         return {
             code: 'NWL_STUNTED',
-            html: `<span class="status-badge status-info">📊 Normal Weight to Length/Height</span> + <span class="status-badge ${isStuntedSev ? 'status-severe' : 'status-moderate'}">${label}</span>`
+            html: `<span class="status-badge status-info">📊 Normal Weight to Length/Height</span> + <span class="status-badge ${isStuntedSev?'status-severe':'status-moderate'}">${label}</span>`
         };
     }
 
@@ -1222,12 +1328,12 @@ function getStatusUtama(hasil, lilaCls, umur, waMonth, haMonth, umurKron, pBBI) 
         if (isStuntingKlinis) {
             return {
                 code: 'STUNTING_KLINIS',
-                html: `<span class="status-badge ${isStuntedSev ? 'status-severe' : 'status-moderate'}">📉 ${isStuntedSev ? 'Severely ' : ''}Stunting (Klinis)</span>`
+                html: `<span class="status-badge ${isStuntedSev?'status-severe':'status-moderate'}">📉 ${isStuntedSev?'Severely ':''}Stunting (Klinis)</span>`
             };
         }
         return {
             code: 'STUNTED',
-            html: `<span class="status-badge ${isStuntedSev ? 'status-severe' : 'status-moderate'}">📏 ${isStuntedSev ? 'Severely ' : ''}Stunted (Antropometri)</span>`
+            html: `<span class="status-badge ${isStuntedSev?'status-severe':'status-moderate'}">📏 ${isStuntedSev?'Severely ':''}Stunted (Antropometri)</span>`
         };
     }
 
@@ -1286,7 +1392,7 @@ function buildDiagnosis_unused(hasil, lilaCls, umur, waMonth, haMonth, umurKron,
             icon: '⚠️',
             txt: 'Gizi Kurang (Moderate Acute Malnutrition / MAM)',
             badge: 'status-moderate',
-            detail: `BB/TB = ${hasil.bbtb !== undefined ? hasil.bbtb.toFixed(2) + ' SD' : '-'}`
+            detail: `BB/TB = ${hasil.bbtb !== undefined ? hasil.bbtb.toFixed(2)+' SD' : '-'}`
         });
         recList.push('Terapi nutrisi: suplementasi makanan padat energi, edukasi gizi ke orang tua.');
     }
@@ -1392,7 +1498,7 @@ function buildDiagnosis_unused(hasil, lilaCls, umur, waMonth, haMonth, umurKron,
         </div>`;
     }
     diagHtml += `</div>`;
-    return diagHtml;
+        return diagHtml;
 }
 
 // ==================== SVG PROGRESS GAUGE & ADVICE GENERATORS ====================
@@ -1405,8 +1511,8 @@ function drawZScoreGauge(zScore, percentile, indicatorType, refUsed, classificat
         else if (classification.badge.includes('obese')) colorClass = 'obese';
         else if (classification.badge.includes('info')) colorClass = 'info';
     }
-    const pct = percentile !== undefined && Number.isFinite(percentile)
-        ? percentile
+    const pct = percentile !== undefined && Number.isFinite(percentile) 
+        ? percentile 
         : (Number.isFinite(zScore) ? zToPercentile(zScore) : 50);
     const boundedPct = Math.max(0, Math.min(100, pct));
     const circumference = 2 * Math.PI * 38;
