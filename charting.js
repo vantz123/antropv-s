@@ -686,45 +686,7 @@ window.chartInstancesList = [];
             const ageText = window.GrowthChartShared.formatYearsFromMonths(patient.umur_dipakai);
             ctx.fillText(`Usia: ${ageText}`, boxX + 20, boxY + 65);
             
-            // 6. Tambahkan Interpretasi Hasil di Kiri Atas
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.fillRect(40, 40, 400, 150); // Background kotak interpretasi
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = '#000';
-            ctx.strokeRect(40, 40, 400, 150);
-            
-            ctx.font = "bold 18px Arial";
-            ctx.fillStyle = "#333";
-            ctx.fillText("Hasil Pengukuran:", 60, 70);
-
-            let resultText = "";
-            let resObj = null;
-            if (indicator === 'bmi' || indicator === 'imtu') { resultText = patient.imt_hasil || ''; resObj = patient.imtu_res; }
-            else if (indicator === 'stature' || indicator === 'tbu') { resultText = patient.tb_hasil || ''; resObj = patient.tbu_res; }
-            else if (indicator === 'weight' || indicator === 'bbu') { resultText = patient.bb_hasil || ''; resObj = patient.bbu_res; }
-            else if (indicator === 'headcirc' || indicator === 'lku') { resultText = patient.lk_hasil || ''; resObj = patient.lku_res; }
-            else if (indicator === 'weight_length' || indicator === 'bbpb' || indicator === 'bbtb') { resultText = patient.bbtb_hasil || ''; resObj = patient.bbtb_res; }
-
-            ctx.font = "bold 16px Arial";
-            // Color coding based on result
-            let textColor = "black";
-            const textLower = resultText.toLowerCase();
-            if (textLower.includes('severe') || textLower.includes('buruk') || textLower.includes('< p3')) textColor = "red";
-            else if (textLower.includes('risk') || textLower.includes('overweight') || textLower.includes('underweight')) textColor = "orange";
-            else if (textLower.includes('normo') || textLower.includes('normal') || textLower.includes('healthy')) textColor = "green";
-            
-            ctx.fillStyle = textColor;
-            ctx.fillText(`Interpretasi: ${resultText}`, 60, 100);
-
-            // BBI info
-            if (patient.bbi && (indicator === 'weight' || indicator === 'bbu' || activeRef === 'cdc')) {
-                ctx.fillStyle = "blue";
-                ctx.fillText(`Berat Badan Ideal (BBI): ${Number(patient.bbi).toFixed(1)} kg`, 60, 130);
-                if (patient.ha_text) {
-                    ctx.fillStyle = "purple";
-                    ctx.fillText(`Height-Age (HA): ${patient.ha_text}`, 60, 160);
-                }
-            }
+            // Interpretasi kiri atas dihapus sesuai permintaan user
             // 6. Download Image
             const filename = `Grafik_Resmi_${patient.nama || 'Pasien'}_${activeRef.toUpperCase()}_${indicator.toUpperCase()}.png`;
             downloadCanvasAsImage(canvas, filename);

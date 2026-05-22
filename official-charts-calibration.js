@@ -33,52 +33,52 @@ window.OfficialChartsDB = {
     "who_male_stature": {
         "pdfUrl": "assets/pdfs/who_male_tbu.pdf",
         "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 45, "yMax": 125},
-        "pixelBounds": {"xMin": 242, "xMax": 1431, "yMin": 1004, "yMax": 239}
+        "pixelBounds": {"xMin": 220.83, "xMax": 1475.29, "yMin": 1027.82, "yMax": 239.06}
     },
     "who_female_stature": {
         "pdfUrl": "assets/pdfs/who_female_tbu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 45, "yMax": 120},
-        "pixelBounds": {"xMin": 242, "xMax": 1431, "yMin": 1004, "yMax": 239}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 45, "yMax": 125},
+        "pixelBounds": {"xMin": 220.82, "xMax": 1475.29, "yMin": 1027.19, "yMax": 239.06}
     },
     "who_male_weight": {
         "pdfUrl": "assets/pdfs/who_male_bbu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 0, "yMax": 26},
-        "pixelBounds": {"xMin": 242, "xMax": 1431, "yMin": 1004, "yMax": 239}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 2, "yMax": 28},
+        "pixelBounds": {"xMin": 220.93, "xMax": 1475.73, "yMin": 1027.19, "yMax": 239.84}
     },
     "who_female_weight": {
         "pdfUrl": "assets/pdfs/who_female_bbu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 0, "yMax": 26},
-        "pixelBounds": {"xMin": 242, "xMax": 1431, "yMin": 1004, "yMax": 239}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 2, "yMax": 30},
+        "pixelBounds": {"xMin": 220.80, "xMax": 1475.29, "yMin": 1027.19, "yMax": 239.84}
     },
     "who_male_imtu": {
         "pdfUrl": "assets/pdfs/who_male_imtu.pdf",
         "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 10, "yMax": 22},
-        "pixelBounds": {"xMin": 242, 'xMax': 1431, "yMin": 1004, "yMax": 239}
+        "pixelBounds": {"xMin": 220.67, "xMax": 1475.29, "yMin": 1027.19, "yMax": 239.84}
     },
     "who_female_imtu": {
         "pdfUrl": "assets/pdfs/who_female_imtu.pdf",
         "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 10, "yMax": 22},
-        "pixelBounds": {"xMin": 242, "xMax": 1431, "yMin": 1004, "yMax": 239}
+        "pixelBounds": {"xMin": 220.66, "xMax": 1475.29, "yMin": 1027.19, "yMax": 239.84}
     },
     "who_male_headcirc": {
         "pdfUrl": "assets/pdfs/who_male_lku.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 30, "yMax": 56},
-        "pixelBounds": {"xMin": 242, "xMax": 1431, "yMin": 1004, "yMax": 239}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 30, "yMax": 54},
+        "pixelBounds": {"xMin": 210.36, "xMax": 965.16, "yMin": 1099.92, "yMax": 248.04}
     },
     "who_female_headcirc": {
         "pdfUrl": "assets/pdfs/who_female_lku.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 30, "yMax": 56},
-        "pixelBounds": {"xMin": 242, "xMax": 1431, "yMin": 1004, "yMax": 239}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 30, "yMax": 54},
+        "pixelBounds": {"xMin": 210.36, "xMax": 965.16, "yMin": 1099.99, "yMax": 248.04}
     },
     "who_male_weight_length": {
         "pdfUrl": "assets/pdfs/who_male_bbpb.pdf",
         "mathBounds": {"xMin": 45, "xMax": 110, "yMin": 2, "yMax": 24},
-        "pixelBounds": {"xMin": 222, "xMax": 1431, "yMin": 997, "yMax": 240}
+        "pixelBounds": {"xMin": 221.37, "xMax": 1475.29, "yMin": 1013.37, "yMax": 239.84}
     },
     "who_female_weight_length": {
         "pdfUrl": "assets/pdfs/who_female_bbpb.pdf",
         "mathBounds": {"xMin": 45, "xMax": 110, "yMin": 2, "yMax": 24},
-        "pixelBounds": {"xMin": 222, "xMax": 1431, "yMin": 997, "yMax": 240}
+        "pixelBounds": {"xMin": 221.51, "xMax": 1475.29, "yMin": 1013.37, "yMax": 239.84}
     }
 };
 
