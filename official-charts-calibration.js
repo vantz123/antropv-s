@@ -104,13 +104,16 @@ window.OfficialChartsDB = {
             "yMax": 26
         },
         "pixelBounds": {
-            "xMin": 154,
-            "xMax": 1564,
-            "yMin": 1058,
-            "yMax": 156
+            "yMax": 30
+        },
+        "pixelBounds": {
+            "xMin": 222,
+            "xMax": 1432,
+            "yMin": 1004,
+            "yMax": 248
         }
     },
-    "who_male_bmi": {
+    "who_male_imtu": {
         "pdfUrl": "assets/pdfs/who_male_imtu.pdf",
         "mathBounds": {
             "xMin": 0,
@@ -119,13 +122,13 @@ window.OfficialChartsDB = {
             "yMax": 22
         },
         "pixelBounds": {
-            "xMin": 154,
-            "xMax": 1564,
-            "yMin": 1058,
-            "yMax": 156
+            "xMin": 222,
+            "xMax": 1432,
+            "yMin": 1004,
+            "yMax": 248
         }
     },
-    "who_female_bmi": {
+    "who_female_imtu": {
         "pdfUrl": "assets/pdfs/who_female_imtu.pdf",
         "mathBounds": {
             "xMin": 0,
@@ -134,10 +137,10 @@ window.OfficialChartsDB = {
             "yMax": 22
         },
         "pixelBounds": {
-            "xMin": 154,
-            "xMax": 1564,
-            "yMin": 1058,
-            "yMax": 156
+            "xMin": 222,
+            "xMax": 1432,
+            "yMin": 1004,
+            "yMax": 248
         }
     },
     "who_male_headcirc": {
@@ -149,10 +152,10 @@ window.OfficialChartsDB = {
             "yMax": 56
         },
         "pixelBounds": {
-            "xMin": 154,
-            "xMax": 1564,
-            "yMin": 1058,
-            "yMax": 156
+            "xMin": 222,
+            "xMax": 1432,
+            "yMin": 1004,
+            "yMax": 248
         }
     },
     "who_female_headcirc": {
@@ -164,10 +167,10 @@ window.OfficialChartsDB = {
             "yMax": 56
         },
         "pixelBounds": {
-            "xMin": 154,
-            "xMax": 1564,
-            "yMin": 1058,
-            "yMax": 156
+            "xMin": 222,
+            "xMax": 1432,
+            "yMin": 1004,
+            "yMax": 248
         }
     },
     "who_male_weight_length": {
@@ -175,14 +178,14 @@ window.OfficialChartsDB = {
         "mathBounds": {
             "xMin": 45,
             "xMax": 110,
-            "yMin": 0,
+            "yMin": 2,
             "yMax": 24
         },
         "pixelBounds": {
-            "xMin": 154,
-            "xMax": 1564,
-            "yMin": 1058,
-            "yMax": 156
+            "xMin": 222,
+            "xMax": 1432,
+            "yMin": 1056,
+            "yMax": 248
         }
     },
     "who_female_weight_length": {
@@ -190,14 +193,14 @@ window.OfficialChartsDB = {
         "mathBounds": {
             "xMin": 45,
             "xMax": 110,
-            "yMin": 0,
+            "yMin": 2,
             "yMax": 24
         },
         "pixelBounds": {
-            "xMin": 154,
-            "xMax": 1564,
-            "yMin": 1058,
-            "yMax": 156
+            "xMin": 222,
+            "xMax": 1432,
+            "yMin": 1056,
+            "yMax": 248
         }
     }
 };
