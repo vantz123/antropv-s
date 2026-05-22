@@ -596,87 +596,70 @@ window.chartInstancesList = [];
             // 4. Hitung Koordinat dan Gambar Titik
             
             // Fungsi pembantu untuk menggambar satu titik
-            const drawDot = (key, xVal, yVal, xTxt, yTxt) => {
+            const drawDot = (key, xVal, yVal, labelText, color = 'red', radius = 5) => {
                 if (yVal !== null && yVal !== undefined && !isNaN(xVal)) {
                     const coords = window.calculateOfficialPixelCoords(key, Number(xVal), Number(yVal));
                     if (coords) {
                         ctx.beginPath();
-                        ctx.arc(coords.x, coords.y, 8, 0, 2 * Math.PI, false);
-                        ctx.fillStyle = 'red';
+                        ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI, false);
+                        ctx.fillStyle = color;
                         ctx.fill();
-                        ctx.lineWidth = 2;
-                        ctx.strokeStyle = '#8B0000';
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = 'black';
                         ctx.stroke();
 
-                        ctx.font = "bold 16px Arial";
-                        ctx.fillStyle = "black";
-                        ctx.fillText(`(${xTxt}, ${yTxt})`, coords.x + 15, coords.y + 5);
+                        ctx.font = "bold 14px Arial";
+                        ctx.fillStyle = color;
+                        ctx.fillText(labelText, coords.x + 8, coords.y - 8);
                     }
                 }
             };
 
-            // Jika ini grafik CDC Stature/Weight (karena ada 2 grid dalam 1 PDF), gambar keduanya!
+            // Jika ini grafik CDC Stature/Weight (karena ada 2 grid dalam 1 PDF), gambar semuanya!
             if (activeRef === 'cdc' && (indicator === 'stature' || indicator === 'tbu' || indicator === 'weight' || indicator === 'bbu')) {
-                // Gambar dot Stature di grid atas
                 const statKey = `cdc_${patient.gender}_stature`;
-                drawDot(statKey, patient.umur_dipakai, patient.tb, xAxisText, `${Number(patient.tb).toFixed(1)} cm`);
-                // Gambar dot Weight di grid bawah
                 const weightKey = `cdc_${patient.gender}_weight`;
-                drawDot(weightKey, patient.umur_dipakai, patient.bbs, xAxisText, `${Number(patient.bbs).toFixed(1)} kg`);
+                
+                // Stature Grid Dots
+                drawDot(statKey, patient.umur_dipakai, patient.tb, `TB/U (${Number(patient.tb).toFixed(1)}cm)`);
+                if (Number.isFinite(patient.haMonth)) {
+                    drawDot(statKey, patient.haMonth, patient.tb, `HA`, 'blue');
+                }
+                
+                // Weight Grid Dots
+                drawDot(weightKey, patient.umur_dipakai, patient.bbs, `BB/U (${Number(patient.bbs).toFixed(1)}kg)`);
+                if (Number.isFinite(patient.waMonth)) {
+                    drawDot(weightKey, patient.waMonth, patient.bbs, `WA`, 'blue');
+                }
+                if (Number.isFinite(patient.bbi)) {
+                    drawDot(weightKey, patient.umur_dipakai, patient.bbi, `BBI (${Number(patient.bbi).toFixed(1)}kg)`, 'green');
+                }
             } else {
                 // Untuk grafik lainnya, cukup gambar satu titik utama
-                drawDot(chartKey, xAxisValue, yAxisValue, xAxisText, yAxisText);
+                drawDot(chartKey, xAxisValue, yAxisValue, `${yAxisText}`);
             }
 
-            // 5. Tambahkan Header Identitas Pasien di Kiri Atas
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            ctx.fillRect(40, 40, 500, 240); // Background kotak identitas diperbesar
+            // 5. Tambahkan Header Identitas Pasien di Kanan Atas
+            const boxWidth = 350;
+            const boxHeight = 85;
+            const boxX = canvas.width - boxWidth - 30; // Kanan atas
+            const boxY = 40;
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
             ctx.lineWidth = 2;
             ctx.strokeStyle = '#000';
-            ctx.strokeRect(40, 40, 500, 240);
+            ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
 
             ctx.font = "bold 20px Arial";
             ctx.fillStyle = "black";
-            ctx.fillText("DATA PASIEN (AntroBuild)", 60, 70);
+            const patientName = patient.nama ? patient.nama.substring(0, 25) : 'Pasien';
+            ctx.fillText(`Nama: ${patientName}`, boxX + 20, boxY + 35);
             
-            ctx.font = "18px Arial";
-            ctx.fillText(`Nama: ${patient.nama || '-'}`, 60, 100);
-            ctx.fillText(`Umur: ${window.GrowthChartShared.formatYearsFromMonths(patient.umur_dipakai)} tahun`, 60, 125);
-            ctx.fillText(`Kelamin: ${patient.gender === 'male' ? 'Laki-laki' : 'Perempuan'}`, 60, 150);
-            ctx.fillText(`Tgl Ukur: ${document.getElementById('tanggal_ukur').value || '-'}`, 60, 175);
+            const ageText = window.GrowthChartShared.formatYearsFromMonths(patient.umur_dipakai);
+            ctx.fillText(`Usia: ${ageText}`, boxX + 20, boxY + 65);
             
-            // Tambahkan data klinis
-            ctx.font = "bold 16px Arial";
-            ctx.fillStyle = "#0056b3";
-            let yTextPos = 205;
-            
-            if (patient.ha_text) {
-                ctx.fillText(`Height-Age (HA): ${patient.ha_text}`, 60, yTextPos);
-                yTextPos += 22;
-            }
-            if (patient.wa_text) {
-                ctx.fillText(`Weight-Age (WA): ${patient.wa_text}`, 60, yTextPos);
-                yTextPos += 22;
-            }
-            if (patient.bbi) {
-                ctx.fillText(`BBI: ${Number(patient.bbi).toFixed(1)} kg`, 300, 205);
-            }
-
-            // Hitung nilai Z-Score / Pct yang sesuai untuk dicetak
-            let resultText = "";
-            if (indicator === 'bmi' || indicator === 'imtu') resultText = patient.imt_hasil ? `Interpretasi: ${patient.imt_hasil}` : '';
-            else if (indicator === 'stature' || indicator === 'tbu') resultText = patient.tb_hasil ? `Interpretasi: ${patient.tb_hasil}` : '';
-            else if (indicator === 'weight' || indicator === 'bbu') resultText = patient.bb_hasil ? `Interpretasi: ${patient.bb_hasil}` : '';
-            else if (indicator === 'headcirc' || indicator === 'lku') resultText = patient.lk_hasil ? `Interpretasi: ${patient.lk_hasil}` : '';
-            else if (indicator === 'weight_length' || indicator === 'bbpb' || indicator === 'bbtb') resultText = patient.bbtb_hasil ? `Interpretasi: ${patient.bbtb_hasil}` : '';
-
-            if (resultText) {
-                ctx.font = "bold 16px Arial";
-                ctx.fillStyle = "red";
-                // Jika teks terlalu panjang, potong agar muat
-                if (resultText.length > 50) resultText = resultText.substring(0, 50) + "...";
-                ctx.fillText(resultText, 60, yTextPos + 5);
-            }
+            // Teks tambahan dihapus sesuai permintaan user, hanya menyisakan titik (dot) di grafik dan ID box di kanan atas.
 
             // 6. Download Image
             const filename = `Grafik_Resmi_${patient.nama || 'Pasien'}_${activeRef.toUpperCase()}_${indicator.toUpperCase()}.png`;

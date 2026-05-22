@@ -3,22 +3,22 @@ window.OfficialChartsDB = {
     "cdc_male_stature": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 75, "yMax": 195},
-        "pixelBounds": {"xMin": 117, "xMax": 1094, "yMin": 782, "yMax": 179}
-    },
-    "cdc_female_stature": {
-        "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 75, "yMax": 180},
-        "pixelBounds": {"xMin": 117, "xMax": 1094, "yMin": 782, "yMax": 179}
+        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1169, "yMax": 199}
     },
     "cdc_male_weight": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 105},
-        "pixelBounds": {"xMin": 115, "xMax": 1093, "yMin": 1441, "yMax": 803}
+        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1457.5, "yMax": 1103.6}
+    },
+    "cdc_female_stature": {
+        "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
+        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 75, "yMax": 195},
+        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1169, "yMax": 199}
     },
     "cdc_female_weight": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 105},
-        "pixelBounds": {"xMin": 115, "xMax": 1093, "yMin": 1441, "yMax": 803}
+        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1457.5, "yMax": 1103.6}
     },
     "cdc_male_bmi": {
         "pdfUrl": "assets/pdfs/cdc_male_bmi.pdf",
@@ -29,10 +29,10 @@ window.OfficialChartsDB = {
             "yMax": 35
         },
         "pixelBounds": {
-            "xMin": 196,
-            "xMax": 1042,
-            "yMin": 1357,
-            "yMax": 161
+            "xMin": 116,
+            "xMax": 1124,
+            "yMin": 1442,
+            "yMax": 94
         }
     },
     "cdc_female_bmi": {
@@ -44,10 +44,10 @@ window.OfficialChartsDB = {
             "yMax": 35
         },
         "pixelBounds": {
-            "xMin": 196,
-            "xMax": 1042,
-            "yMin": 1357,
-            "yMax": 161
+            "xMin": 116,
+            "xMax": 1124,
+            "yMin": 1442,
+            "yMax": 94
         }
     },
     "who_male_stature": {
