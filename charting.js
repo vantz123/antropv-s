@@ -510,15 +510,25 @@ window.chartInstancesList = [];
         }
         
         const age = Number(patient.umur_dipakai);
-        const activeRef = getRefActive(age); // 'who' or 'cdc'
+        let activeRef = getRefActive(age); // 'who' or 'cdc'
         const gender = getActiveGender(patient);
+        
         // Mapping indicator dari AntroBuild ke nama kunci di OfficialChartsDB
         let normalizedInd = indicator;
-        if (indicator === 'tbu') normalizedInd = 'stature';
-        else if (indicator === 'bbu') normalizedInd = 'weight';
-        else if (indicator === 'imtu') normalizedInd = 'bmi';
-        else if (indicator === 'lku') normalizedInd = 'headcirc';
-        else if (indicator === 'bbpb' || indicator === 'bbtb') normalizedInd = 'weight_length';
+        if (indicator === 'stature' || indicator === 'weight' || indicator === 'bmi') {
+            activeRef = 'cdc';
+            normalizedInd = indicator;
+        } else if (indicator === 'tbu') {
+            activeRef = 'who'; normalizedInd = 'stature';
+        } else if (indicator === 'bbu') {
+            activeRef = 'who'; normalizedInd = 'weight';
+        } else if (indicator === 'imtu') {
+            activeRef = 'who'; normalizedInd = 'imtu';
+        } else if (indicator === 'lku') {
+            activeRef = 'who'; normalizedInd = 'headcirc';
+        } else if (indicator === 'bbpb' || indicator === 'bbtb') {
+            activeRef = 'who'; normalizedInd = 'weight_length';
+        }
 
         const chartKey = `${activeRef}_${gender}_${normalizedInd}`;
 
@@ -596,7 +606,7 @@ window.chartInstancesList = [];
             // 4. Hitung Koordinat dan Gambar Titik
             
             // Fungsi pembantu untuk menggambar satu titik
-            const drawDot = (key, xVal, yVal, labelText, color = 'red', radius = 5) => {
+            const drawDot = (key, xVal, yVal, labelText, color = 'red', radius = 3.5) => {
                 if (yVal !== null && yVal !== undefined && !isNaN(xVal)) {
                     const coords = window.calculateOfficialPixelCoords(key, Number(xVal), Number(yVal));
                     if (coords) {
@@ -604,7 +614,7 @@ window.chartInstancesList = [];
                         ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI, false);
                         ctx.fillStyle = color;
                         ctx.fill();
-                        ctx.lineWidth = 1;
+                        ctx.lineWidth = 0.5;
                         ctx.strokeStyle = 'black';
                         ctx.stroke();
 
