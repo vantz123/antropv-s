@@ -1,0 +1,28 @@
+{
+  "build_name": "Antropometri Master v11 — WHO/CDC Split + Klinis IDAI Final",
+  "version": "11.0.0",
+  "build_date_utc": "2026-05-09",
+  "summary": "Split WHO/CDC build with audit trail, IDAI clinical lookup tables reintegrated into auto_split, full CDC 2-20 yr coverage, expanded CSV export, and dedicated mode QA.",
+  "features": [
+    "Auto Split / WHO Only Strict / WHO Only Extended App / CDC Only",
+    "Auto Split: WHO 0-5 yr (gold standard), CDC 2-20 yr (extended fallback when WHO unavailable)",
+    "BBI / WA Clinical IDAI lookup tables wired into auto_split with WHO/CDC fallback",
+    "Separated HA/WA/BBI pathways for WHO vs CDC with explicit source labels",
+    "Audit trail card in UI with reference detail per metric",
+    "Expanded CSV export with mode and source metadata",
+    "WHO Strict BBI empty-state handling",
+    "Dedicated split QA matrix"
+  ],
+  "qa_scripts": [
+    "qa_simplified.js (27/27 PASS)",
+    "qa_split_matrix.js (23/23 PASS)",
+    "qa_training_v2.js (183/192 PASS, 95.3%)"
+  ],
+  "data_coverage": {
+    "WHO_0_5": "0-60 months (BB/U, TB/U, BB/PB-TB 45-110cm, IMT/U, LK/U)",
+    "WHO_5_19": "5-19 years (HFA, BFA), WFA 5-10 years",
+    "CDC_2000": "24-240 months (Stature/Weight/BMI-for-Age)",
+    "BBI_Klinis_IDAI": "0-228 months (HA-based lookup)",
+    "WA_Klinis_IDAI": "0-63 kg (BB-based lookup)"
+  }
+}

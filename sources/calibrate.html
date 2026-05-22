@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calibrate PDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <style>
+        body { font-family: sans-serif; }
+        #canvas-container { position: relative; border: 1px solid #ccc; display: inline-block; }
+        canvas { cursor: crosshair; }
+    </style>
+</head>
+<body>
+    <h2>PDF Calibration Tool</h2>
+    <div id="info">Click on the grid boundaries (Min X, Max X, Min Y, Max Y)</div>
+    <div id="canvas-container">
+        <canvas id="pdf-canvas"></canvas>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        const url = 'cdc_bmi_boys_2_20.pdf'; // Must run on local server or file protocol if CORS allows
+
+        let canvas = document.getElementById('pdf-canvas');
+        let ctx = canvas.getContext('2d');
+
+        pdfjsLib.getDocument(url).promise.then(pdf => {
+            return pdf.getPage(1);
+        }).then(page => {
+            const viewport = page.getViewport({ scale: 2.0 }); // High res
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            return page.render(renderContext).promise;
+        }).then(() => {
+            console.log("PDF rendered.");
+        });
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            console.log(`Clicked X: ${Math.round(x)}, Y: ${Math.round(y)}`);
+            document.getElementById('info').innerText = `Last Click -> X: ${Math.round(x)}, Y: ${Math.round(y)}`;
+            
+            // Draw a small dot
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI*2);
+            ctx.fill();
+        });
+    </script>
+</body>
+</html>
