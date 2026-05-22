@@ -2,33 +2,33 @@
 window.OfficialChartsDB = {
     "cdc_male_stature": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 75, "yMax": 195},
-        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1169, "yMax": 199}
+        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 80, "yMax": 190},
+        "pixelBounds": {"xMin": 212.66, "xMax": 979.32, "yMin": 833.62, "yMax": 227.80}
     },
     "cdc_male_weight": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 105},
-        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1457.5, "yMax": 1103.6}
+        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 100},
+        "pixelBounds": {"xMin": 212.66, "xMax": 979.32, "yMin": 1396.42, "yMax": 671.06}
     },
     "cdc_female_stature": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 75, "yMax": 195},
-        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1169, "yMax": 199}
+        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 80, "yMax": 190},
+        "pixelBounds": {"xMin": 212.66, "xMax": 979.32, "yMin": 833.62, "yMax": 227.80}
     },
     "cdc_female_weight": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 105},
-        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1457.5, "yMax": 1103.6}
+        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 100},
+        "pixelBounds": {"xMin": 212.66, "xMax": 979.32, "yMin": 1396.42, "yMax": 671.06}
     },
     "cdc_male_bmi": {
         "pdfUrl": "assets/pdfs/cdc_male_bmi.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 11, "yMax": 35},
-        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1442, "yMax": 94}
+        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 12, "yMax": 35},
+        "pixelBounds": {"xMin": 158.14, "xMax": 1033.20, "yMin": 1282.42, "yMax": 235.24}
     },
     "cdc_female_bmi": {
         "pdfUrl": "assets/pdfs/cdc_female_bmi.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 11, "yMax": 35},
-        "pixelBounds": {"xMin": 116, "xMax": 1124, "yMin": 1442, "yMax": 94}
+        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 12, "yMax": 35},
+        "pixelBounds": {"xMin": 158.14, "xMax": 1033.20, "yMin": 1282.42, "yMax": 235.24}
     },
     "who_male_stature": {
         "pdfUrl": "assets/pdfs/who_male_tbu.pdf",
