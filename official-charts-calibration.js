@@ -2,36 +2,50 @@
 // Pixel coordinates at scale=2.0x (matching charting.js render)
 // pixelBounds: yMin = bottom of chart (high pixel Y), yMax = top (low pixel Y)
 window.OfficialChartsDB = {
-    // CDC Charts (Verified)
+    // CDC Charts (Verified Grid Bounds)
     "cdc_female_bmi": {
         "pdfUrl": "assets/pdfs/cdc_female_bmi.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 12, "yMax": 35},
-        "pixelBounds": {"xMin": 164.0, "xMax": 1045.4, "yMin": 1383.8, "yMax": 155.8}
+        "pixelBounds": {"xMin": 213.2, "xMax": 996.0, "yMin": 1282.4, "yMax": 237.6}
     },
-    "cdc_female_stature": {
+    // CDC Stature Left Grid (Ages 2 to 11.5, i.e., 24 to 138 months)
+    "cdc_female_stature_left": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 80, "yMax": 190},
-        "pixelBounds": {"xMin": 164.0, "xMax": 1045.4, "yMin": 1124.9, "yMax": 238.8}
+        "mathBounds": {"xMin": 24, "xMax": 138, "yMin": 80, "yMax": 160},
+        "pixelBounds": {"xMin": 218.4, "xMax": 626.2, "yMin": 1116.4, "yMax": 470.7}
+    },
+    // CDC Stature Right Grid (Ages 11.5 to 20, i.e., 138 to 240 months)
+    "cdc_female_stature_right": {
+        "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
+        "mathBounds": {"xMin": 138, "xMax": 240, "yMin": 150, "yMax": 190},
+        "pixelBounds": {"xMin": 626.2, "xMax": 991.2, "yMin": 927.9, "yMax": 780.8}
     },
     "cdc_female_weight": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 100},
-        "pixelBounds": {"xMin": 164.0, "xMax": 1045.4, "yMin": 1407.4, "yMax": 683.4}
+        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1396.4, "yMax": 955.0}
     },
     "cdc_male_bmi": {
         "pdfUrl": "assets/pdfs/cdc_male_bmi.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 12, "yMax": 35},
-        "pixelBounds": {"xMin": 164.0, "xMax": 1045.4, "yMin": 1383.8, "yMax": 155.8}
+        "pixelBounds": {"xMin": 213.2, "xMax": 996.0, "yMin": 1282.4, "yMax": 237.6}
     },
-    "cdc_male_stature": {
+    // CDC Stature Left Grid (Ages 2 to 11.5, i.e., 24 to 138 months)
+    "cdc_male_stature_left": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 80, "yMax": 190},
-        "pixelBounds": {"xMin": 164.0, "xMax": 1045.4, "yMin": 1124.9, "yMax": 238.8}
+        "mathBounds": {"xMin": 24, "xMax": 138, "yMin": 80, "yMax": 160},
+        "pixelBounds": {"xMin": 218.4, "xMax": 626.2, "yMin": 1116.4, "yMax": 470.7}
+    },
+    // CDC Stature Right Grid (Ages 11.5 to 20, i.e., 138 to 240 months)
+    "cdc_male_stature_right": {
+        "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
+        "mathBounds": {"xMin": 138, "xMax": 240, "yMin": 150, "yMax": 190},
+        "pixelBounds": {"xMin": 626.2, "xMax": 991.2, "yMin": 927.9, "yMax": 780.8}
     },
     "cdc_male_weight": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 100},
-        "pixelBounds": {"xMin": 164.0, "xMax": 1045.4, "yMin": 1407.4, "yMax": 683.4}
+        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1396.4, "yMax": 955.0}
     },
 
     // WHO Charts (Extrapolated from Extracted Grid Lines)
@@ -88,7 +102,16 @@ window.OfficialChartsDB = {
 };
 
 window.calculateOfficialPixelCoords = function(chartKey, xAxisValue, yAxisValue) {
-    const chart = window.OfficialChartsDB[chartKey];
+    let resolvedKey = chartKey;
+    
+    // Split coordinate grids dynamically for CDC Stature based on Age in months (11.5 years = 138 months)
+    if (chartKey === 'cdc_female_stature') {
+        resolvedKey = xAxisValue < 138 ? 'cdc_female_stature_left' : 'cdc_female_stature_right';
+    } else if (chartKey === 'cdc_male_stature') {
+        resolvedKey = xAxisValue < 138 ? 'cdc_male_stature_left' : 'cdc_male_stature_right';
+    }
+
+    const chart = window.OfficialChartsDB[resolvedKey];
     if (!chart) return null;
 
     const math = chart.mathBounds;
