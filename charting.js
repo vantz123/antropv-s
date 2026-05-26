@@ -384,7 +384,13 @@ window.chartInstancesList = [];
                 dwnBtn.style.padding = '6px 12px';
                 dwnBtn.style.fontSize = '0.8em';
                 dwnBtn.innerHTML = '⬇️ Unduh Gambar';
-                dwnBtn.onclick = () => downloadCanvasAsImage(canvas, `Grafik_${patient.nama || 'Pasien'}_${opt.value.toUpperCase()}.png`);
+                dwnBtn.onclick = () => {
+                    const patientSafeName = (patient.nama || 'Anonim').replace(/[^a-z0-9]/gi, '_');
+                    const refStr = activeRef.toUpperCase();
+                    const ageStr = activeRef === 'who' ? '0-5_Tahun' : '2-20_Tahun';
+                    const genStr = gender === 'male' ? 'Laki-laki' : 'Perempuan';
+                    downloadCanvasAsImage(canvas, `Grafik_NonPDF_${refStr}_${ageStr}_${opt.value.toUpperCase()}_${genStr}_${patientSafeName}.png`);
+                };
                 btnWrap.appendChild(dwnBtn);
 
                 card.appendChild(title);
@@ -686,9 +692,20 @@ window.chartInstancesList = [];
             const ageText = window.GrowthChartShared.formatYearsFromMonths(patient.umur_dipakai);
             ctx.fillText(`Usia: ${ageText}`, boxX + 20, boxY + 65);
             
-            // Interpretasi kiri atas dihapus sesuai permintaan user
             // 6. Download Image
-            const filename = `Grafik_Resmi_${patient.nama || 'Pasien'}_${activeRef.toUpperCase()}_${indicator.toUpperCase()}.png`;
+            const ageStr = activeRef === 'who' ? '0-5_Tahun' : '2-20_Tahun';
+            const genderStr = patient.gender === 'male' ? 'Laki-laki' : 'Perempuan';
+            
+            let descriptiveInd = indicator.toUpperCase();
+            if (indicator === 'stature' || indicator === 'tbu') descriptiveInd = 'Tinggi_Badan_Usia';
+            if (indicator === 'weight' || indicator === 'bbu') descriptiveInd = 'Berat_Badan_Usia';
+            if (indicator === 'bmi' || indicator === 'imtu') descriptiveInd = 'IMT_Usia';
+            if (indicator === 'lku' || indicator === 'headcirc') descriptiveInd = 'Lingkar_Kepala_Usia';
+            if (indicator === 'bbpb' || indicator === 'bbtb' || indicator === 'weight_length') descriptiveInd = 'Berat_Badan_Tinggi_Badan';
+
+            const patientSafeName = (patient.nama || 'Anonim').replace(/[^a-z0-9]/gi, '_');
+            const filename = `Grafik_${activeRef.toUpperCase()}_${ageStr}_${descriptiveInd}_${genderStr}_${patientSafeName}.png`;
+            
             downloadCanvasAsImage(canvas, filename);
 
         } catch (err) {
@@ -728,7 +745,19 @@ window.chartInstancesList = [];
         });
         
         setTimeout(() => {
-            const filename = `Kurva_${patient.nama || 'Pasien'}_${activeRef.toUpperCase()}_${indicator.toUpperCase()}.png`;
+            const ageStr = activeRef === 'who' ? '0-5_Tahun' : '2-20_Tahun';
+            const genderStr = patient.gender === 'male' ? 'Laki-laki' : 'Perempuan';
+            
+            let descriptiveInd = indicator.toUpperCase();
+            if (indicator === 'stature' || indicator === 'tbu') descriptiveInd = 'Tinggi_Badan_Usia';
+            if (indicator === 'weight' || indicator === 'bbu') descriptiveInd = 'Berat_Badan_Usia';
+            if (indicator === 'bmi' || indicator === 'imtu') descriptiveInd = 'IMT_Usia';
+            if (indicator === 'lku' || indicator === 'headcirc') descriptiveInd = 'Lingkar_Kepala_Usia';
+            if (indicator === 'bbpb' || indicator === 'bbtb' || indicator === 'weight_length') descriptiveInd = 'Berat_Badan_Tinggi_Badan';
+
+            const patientSafeName = (patient.nama || 'Anonim').replace(/[^a-z0-9]/gi, '_');
+            const filename = `Grafik_Fallback_${activeRef.toUpperCase()}_${ageStr}_${descriptiveInd}_${genderStr}_${patientSafeName}.png`;
+            
             downloadCanvasAsImage(canvas, filename);
             chart.destroy();
             document.body.removeChild(canvas);

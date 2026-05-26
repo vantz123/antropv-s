@@ -708,32 +708,22 @@ function calculateSummaryAgesByMode(gender, umurKron, bbs, tb, mode) {
                 waSourceDetail = waInfo.sourceDetail || null;
             }
         } else {
-            // Auto split: prioritaskan tabel WA Klinis IDAI bila tersedia
-            if (typeof lookupWAClinical === 'function') {
-                const v = lookupWAClinical(gender, bbs);
-                if (Number.isFinite(v) && v > 0) {
-                    waMonth = v;
-                    waRef = 'Klinis (IDAI)';
-                    waSourceDetail = 'Tabel WA Klinis IDAI berdasarkan BB';
+            // Auto split: use CDC for > 60 months, WHO otherwise
+            if (umurKron > 60) {
+                const waInfo = calculateWACDC(bbs, gender);
+                if (waInfo) {
+                    waMonth = waInfo.age;
+                    waRef = waInfo.ref;
+                    waNote = waInfo.note || null;
+                    waSourceDetail = waInfo.sourceDetail || null;
                 }
-            }
-            if (!Number.isFinite(waMonth)) {
-                if (umurKron > 60) {
-                    const waInfo = calculateWACDC(bbs, gender);
-                    if (waInfo) {
-                        waMonth = waInfo.age;
-                        waRef = waInfo.ref;
-                        waNote = waInfo.note || null;
-                        waSourceDetail = waInfo.sourceDetail || null;
-                    }
-                } else {
-                    const waInfo = calculateWAWhoStrict(bbs, gender, umurKron);
-                    if (waInfo) {
-                        waMonth = waInfo.age;
-                        waRef = waInfo.ref;
-                        waNote = waInfo.note || null;
-                        waSourceDetail = waInfo.sourceDetail || null;
-                    }
+            } else {
+                const waInfo = calculateWAWhoStrict(bbs, gender, umurKron);
+                if (waInfo) {
+                    waMonth = waInfo.age;
+                    waRef = waInfo.ref;
+                    waNote = waInfo.note || null;
+                    waSourceDetail = waInfo.sourceDetail || null;
                 }
             }
         }
@@ -894,25 +884,7 @@ function hitungBBIKlinis_fn(tb, gender, umurKron, mode) {
     if (isWhoOnlyMode(calcMode)) {
         return calculateBBIWhoSeparated(tb, gender, umurKron, calcMode);
     }
-    // Auto split: prioritaskan tabel klinis IDAI bila tersedia (BBI lookup berdasarkan HA)
-    if (typeof lookupBBIClinical === 'function') {
-        const haInfo = (umurKron > 60)
-            ? calculateHACDC(tb, gender)
-            : (calculateHAWhoStrict(tb, gender) || calculateHACDC(tb, gender));
-        if (haInfo && Number.isFinite(haInfo.age)) {
-            const v = lookupBBIClinical(gender, haInfo.age);
-            if (Number.isFinite(v) && v > 0) {
-                return {
-                    bbi: v,
-                    ha: haInfo.age,
-                    ref: 'Klinis (IDAI)',
-                    sourceDetail: 'Tabel BBI Klinis IDAI berdasarkan HA',
-                    note: haInfo.note || null,
-                    calculation_mode: 'auto_split'
-                };
-            }
-        }
-    }
+    // BBI klinis dari sumber asli
     if (Number.isFinite(umurKron) && umurKron > 60) {
         return calculateBBICDCSeparated(tb, gender);
     }

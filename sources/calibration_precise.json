@@ -1,0 +1,240 @@
+{
+  "who_male_tbu": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 45,
+      "yMax": 125
+    },
+    "pixelBounds": {
+      "xMin": 184.97,
+      "xMax": 1760.97,
+      "yMin": 756.6,
+      "yMax": 239.37
+    },
+    "pdfUrl": "assets/pdfs/who_male_tbu.pdf"
+  },
+  "who_female_tbu": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 45,
+      "yMax": 125
+    },
+    "pixelBounds": {
+      "xMin": 184.97,
+      "xMax": 1760.97,
+      "yMin": 756.6,
+      "yMax": 239.37
+    },
+    "pdfUrl": "assets/pdfs/who_female_tbu.pdf"
+  },
+  "who_male_bbu": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 2,
+      "yMax": 28
+    },
+    "pixelBounds": {
+      "xMin": 3810.69,
+      "xMax": -30870.6,
+      "yMin": 1084.51,
+      "yMax": 266.98
+    },
+    "pdfUrl": "assets/pdfs/who_male_bbu.pdf"
+  },
+  "who_female_bbu": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 2,
+      "yMax": 30
+    },
+    "pixelBounds": {
+      "xMin": 3811.02,
+      "xMax": -30873.52,
+      "yMin": 1079.82,
+      "yMax": 265.17
+    },
+    "pdfUrl": "assets/pdfs/who_female_bbu.pdf"
+  },
+  "who_male_imtu": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 10,
+      "yMax": 22
+    },
+    "pixelBounds": {
+      "xMin": -1044.23,
+      "xMax": 12824.03,
+      "yMin": 776.05,
+      "yMax": 284.9
+    },
+    "pdfUrl": "assets/pdfs/who_male_imtu.pdf"
+  },
+  "who_female_imtu": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 10,
+      "yMax": 22
+    },
+    "pixelBounds": {
+      "xMin": -1044.23,
+      "xMax": 12824.03,
+      "yMin": 776.05,
+      "yMax": 284.9
+    },
+    "pdfUrl": "assets/pdfs/who_female_imtu.pdf"
+  },
+  "who_male_lku": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 30,
+      "yMax": 54
+    },
+    "pixelBounds": {
+      "xMin": 1017.3,
+      "xMax": 221.25
+    },
+    "pdfUrl": "assets/pdfs/who_male_lku.pdf"
+  },
+  "who_female_lku": {
+    "mathBounds": {
+      "xMin": 0,
+      "xMax": 60,
+      "yMin": 30,
+      "yMax": 54
+    },
+    "pixelBounds": {
+      "xMin": 1016.64,
+      "xMax": 230.58,
+      "yMin": -13212.55,
+      "yMax": 1390.45
+    },
+    "pdfUrl": "assets/pdfs/who_female_lku.pdf"
+  },
+  "who_male_bbpb": {
+    "mathBounds": {
+      "xMin": 45,
+      "xMax": 110,
+      "yMin": 2,
+      "yMax": 24
+    },
+    "pixelBounds": {
+      "xMin": 621.57,
+      "xMax": -767.47,
+      "yMin": -370.73,
+      "yMax": 271.59
+    },
+    "pdfUrl": "assets/pdfs/who_male_bbpb.pdf"
+  },
+  "who_female_bbpb": {
+    "mathBounds": {
+      "xMin": 45,
+      "xMax": 110,
+      "yMin": 2,
+      "yMax": 24
+    },
+    "pixelBounds": {
+      "xMin": 621.57,
+      "xMax": -767.47,
+      "yMin": -370.73,
+      "yMax": 271.59
+    },
+    "pdfUrl": "assets/pdfs/who_female_bbpb.pdf"
+  },
+  "cdc_male_bmi": {
+    "mathBounds": {
+      "xMin": 24,
+      "xMax": 240,
+      "yMin": 12,
+      "yMax": 35
+    },
+    "pixelBounds": {
+      "xMin": -8287.12,
+      "xMax": -100600.54,
+      "yMin": 1106.78,
+      "yMax": 348.08
+    },
+    "pdfUrl": "assets/pdfs/cdc_male_bmi.pdf"
+  },
+  "cdc_female_bmi": {
+    "mathBounds": {
+      "xMin": 24,
+      "xMax": 240,
+      "yMin": 12,
+      "yMax": 35
+    },
+    "pixelBounds": {
+      "xMin": -8287.12,
+      "xMax": -100600.54,
+      "yMin": 1106.78,
+      "yMax": 348.08
+    },
+    "pdfUrl": "assets/pdfs/cdc_female_bmi.pdf"
+  },
+  "cdc_male_stature": {
+    "mathBounds": {
+      "xMin": 24,
+      "xMax": 240,
+      "yMin": 30,
+      "yMax": 77
+    },
+    "pixelBounds": {
+      "xMin": 482.8,
+      "xMax": 2759.03,
+      "yMin": 1381.28,
+      "yMax": 89.42
+    },
+    "pdfUrl": "assets/pdfs/cdc_male_stature.pdf"
+  },
+  "cdc_male_weight": {
+    "mathBounds": {
+      "xMin": 24,
+      "xMax": 240,
+      "yMin": 10,
+      "yMax": 100
+    },
+    "pixelBounds": {
+      "xMin": 482.8,
+      "xMax": 2759.03,
+      "yMin": 1407.41,
+      "yMax": 966.04
+    },
+    "pdfUrl": "assets/pdfs/cdc_male_stature.pdf"
+  },
+  "cdc_female_stature": {
+    "mathBounds": {
+      "xMin": 24,
+      "xMax": 240,
+      "yMin": 30,
+      "yMax": 77
+    },
+    "pixelBounds": {
+      "xMin": 482.8,
+      "xMax": 2759.03,
+      "yMin": 1381.27,
+      "yMax": 89.42
+    },
+    "pdfUrl": "assets/pdfs/cdc_female_stature.pdf"
+  },
+  "cdc_female_weight": {
+    "mathBounds": {
+      "xMin": 24,
+      "xMax": 240,
+      "yMin": 10,
+      "yMax": 100
+    },
+    "pixelBounds": {
+      "xMin": 482.8,
+      "xMax": 2759.03,
+      "yMin": 1407.41,
+      "yMax": 966.04
+    },
+    "pdfUrl": "assets/pdfs/cdc_female_stature.pdf"
+  }
+}
