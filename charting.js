@@ -617,12 +617,21 @@ window.chartInstancesList = [];
                     const coords = window.calculateOfficialPixelCoords(key, Number(xVal), Number(yVal));
                     if (coords) {
                         ctx.beginPath();
-                        ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI, false);
+                        // Draw a premium horizontal oval (ellipse)
+                        const radiusX = radius * 1.4;
+                        const radiusY = radius * 0.9;
+                        ctx.ellipse(coords.x, coords.y, radiusX, radiusY, 0, 0, 2 * Math.PI);
                         ctx.fillStyle = color;
                         ctx.fill();
-                        ctx.lineWidth = 0.5;
+                        ctx.lineWidth = 1.0;
                         ctx.strokeStyle = 'black';
                         ctx.stroke();
+
+                        // Add a beautiful white target center to make it look premium
+                        ctx.beginPath();
+                        ctx.ellipse(coords.x, coords.y, radiusX * 0.4, radiusY * 0.4, 0, 0, 2 * Math.PI);
+                        ctx.fillStyle = 'white';
+                        ctx.fill();
 
                         ctx.font = "bold 14px Arial";
                         ctx.fillStyle = color;
@@ -689,7 +698,15 @@ window.chartInstancesList = [];
             const patientName = patient.nama ? patient.nama.substring(0, 25) : 'Pasien';
             ctx.fillText(`Nama: ${patientName}`, boxX + 20, boxY + 35);
             
-            const ageText = window.GrowthChartShared.formatYearsFromMonths(patient.umur_dipakai);
+            const formatAgeIndonesian = (months) => {
+                const totalMonths = Math.round(Number(months));
+                const years = Math.floor(totalMonths / 12);
+                const remMonths = totalMonths % 12;
+                if (years === 0) return `${remMonths} bulan`;
+                if (remMonths === 0) return `${years} tahun`;
+                return `${years} tahun ${remMonths} bulan`;
+            };
+            const ageText = formatAgeIndonesian(patient.umur_dipakai);
             ctx.fillText(`Usia: ${ageText}`, boxX + 20, boxY + 65);
             
             // 6. Download Image
