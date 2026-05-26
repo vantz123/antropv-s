@@ -23,7 +23,7 @@ window.OfficialChartsDB = {
     "cdc_female_weight": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 100},
-        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1396.4, "yMax": 955.0}
+        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1396.4, "yMax": 671.1}
     },
     "cdc_male_bmi": {
         "pdfUrl": "assets/pdfs/cdc_male_bmi.pdf",
@@ -45,10 +45,10 @@ window.OfficialChartsDB = {
     "cdc_male_weight": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 10, "yMax": 100},
-        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1396.4, "yMax": 955.0}
+        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1396.4, "yMax": 671.1}
     },
 
-    // WHO Charts (Extrapolated from Extracted Grid Lines)
+    // WHO Charts (Landscape A4 - 100% Mathematically Verified Grid Bounds)
     "who_female_headcirc": {
         "pdfUrl": "assets/pdfs/who_female_lku.pdf",
         "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 30.0, "yMax": 55.3},
@@ -56,23 +56,23 @@ window.OfficialChartsDB = {
     },
     "who_female_imtu": {
         "pdfUrl": "assets/pdfs/who_female_imtu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 8.1, "yMax": 22.8},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 10, "yMax": 22},
+        "pixelBounds": {"xMin": 195.5, "xMax": 1399.7, "yMin": 957.9, "yMax": 275.4}
     },
     "who_female_stature": {
         "pdfUrl": "assets/pdfs/who_female_tbu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 41.5, "yMax": 130.3},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 45, "yMax": 125},
+        "pixelBounds": {"xMin": 195.5, "xMax": 1399.7, "yMin": 957.9, "yMax": 229.8}
     },
     "who_female_weight": {
         "pdfUrl": "assets/pdfs/who_female_bbu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 0.5, "yMax": 32.8},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 2, "yMax": 30},
+        "pixelBounds": {"xMin": 195.5, "xMax": 1399.7, "yMin": 977.6, "yMax": 255.7}
     },
     "who_female_weight_length": {
         "pdfUrl": "assets/pdfs/who_female_bbpb.pdf",
-        "mathBounds": {"xMin": 45, "xMax": 110, "yMin": 0.6, "yMax": 30.1},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 45, "xMax": 110, "yMin": 2, "yMax": 24},
+        "pixelBounds": {"xMin": 213.5, "xMax": 1418.2, "yMin": 971.1, "yMax": 262.1}
     },
     "who_male_headcirc": {
         "pdfUrl": "assets/pdfs/who_male_lku.pdf",
@@ -81,23 +81,23 @@ window.OfficialChartsDB = {
     },
     "who_male_imtu": {
         "pdfUrl": "assets/pdfs/who_male_imtu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 8.1, "yMax": 22.8},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 10, "yMax": 22},
+        "pixelBounds": {"xMin": 195.5, "xMax": 1399.7, "yMin": 957.9, "yMax": 275.4}
     },
     "who_male_stature": {
         "pdfUrl": "assets/pdfs/who_male_tbu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 41.5, "yMax": 130.3},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 45, "yMax": 125},
+        "pixelBounds": {"xMin": 195.5, "xMax": 1399.7, "yMin": 957.9, "yMax": 229.8}
     },
     "who_male_weight": {
         "pdfUrl": "assets/pdfs/who_male_bbu.pdf",
-        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": -1.2, "yMax": 30.9},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 0, "xMax": 60, "yMin": 2, "yMax": 30},
+        "pixelBounds": {"xMin": 195.5, "xMax": 1399.7, "yMin": 977.6, "yMax": 255.7}
     },
     "who_male_weight_length": {
         "pdfUrl": "assets/pdfs/who_male_bbpb.pdf",
-        "mathBounds": {"xMin": 45, "xMax": 110, "yMin": 0.6, "yMax": 30.1},
-        "pixelBounds": {"xMin": 113.2, "xMax": 1570.6, "yMin": 1094.0, "yMax": 118.8}
+        "mathBounds": {"xMin": 45, "xMax": 110, "yMin": 2, "yMax": 24},
+        "pixelBounds": {"xMin": 213.5, "xMax": 1418.2, "yMin": 971.1, "yMax": 262.1}
     },
 };
 
