@@ -1,0 +1,62 @@
+{
+    "who_female_bbpb.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    },
+    "who_female_bbu.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    },
+    "who_female_imtu.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    },
+    "who_female_lku.pdf": {
+        "xMin": 89.0,
+        "xMax": 952.6,
+        "yMin": 1368.8,
+        "yMax": 97.4
+    },
+    "who_female_tbu.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    },
+    "who_male_bbpb.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    },
+    "who_male_bbu.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    },
+    "who_male_imtu.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    },
+    "who_male_lku.pdf": {
+        "xMin": 89.0,
+        "xMax": 953.6,
+        "yMin": 1368.8,
+        "yMax": 97.4
+    },
+    "who_male_tbu.pdf": {
+        "xMin": 113.2,
+        "xMax": 1570.6,
+        "yMin": 1094.0,
+        "yMax": 118.8
+    }
+}

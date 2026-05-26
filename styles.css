@@ -6,11 +6,11 @@
     --border-color: rgba(226, 232, 240, 0.8);
     --text-color: #0f172a;
     --text-muted: #64748b;
-    --primary-color: #4f46e5;
-    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    --primary-color: #0284c7;
+    --primary-gradient: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
     --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
-    --shadow-md: 0 10px 25px -5px rgba(79, 70, 229, 0.1), 0 8px 10px -6px rgba(79, 70, 229, 0.05);
-    --shadow-premium: 0 12px 40px rgba(31, 38, 135, 0.05);
+    --shadow-md: 0 10px 25px -5px rgba(2, 132, 199, 0.1), 0 8px 10px -6px rgba(2, 132, 199, 0.05);
+    --shadow-premium: 0 12px 40px rgba(2, 132, 199, 0.05);
     --gauge-track: #f1f5f9;
     
     /* Status Colors */
@@ -18,7 +18,7 @@
     --color-warning: #f59e0b;
     --color-moderate: #f97316;
     --color-severe: #ef4444;
-    --color-obese: #8b5cf6;
+    --color-obese: #1e3a8a;
     --color-info: #06b6d4;
 }
 
@@ -28,8 +28,8 @@ body.dark-mode {
     --border-color: rgba(51, 65, 85, 0.5);
     --text-color: #f8fafc;
     --text-muted: #94a3b8;
-    --primary-color: #818cf8;
-    --primary-gradient: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+    --primary-color: #38bdf8;
+    --primary-gradient: linear-gradient(135deg, #075985 0%, #0c4a6e 100%);
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
     --shadow-premium: 0 12px 40px rgba(0, 0, 0, 0.5);
@@ -56,7 +56,7 @@ body {
     background: var(--primary-gradient);
     color: white;
     padding: 18px 30px;
-    box-shadow: 0 4px 20px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 4px 20px rgba(2, 132, 199, 0.15);
 }
 .header-title h1 {
     font-size: 1.4em;
@@ -130,12 +130,12 @@ body.dark-mode .nav-tabs {
 }
 .nav-tab:hover {
     color: var(--primary-color);
-    background: rgba(79, 70, 229, 0.08);
+    background: rgba(2, 132, 199, 0.08);
 }
 .nav-tab.active {
     color: white;
     background: var(--primary-gradient);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 .tab-content { display: none; padding: 30px; }
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
@@ -195,7 +195,7 @@ body.dark-mode .nav-tabs {
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
 }
 .form-group textarea { min-height: 110px; font-family: monospace; resize: vertical; }
 
@@ -216,11 +216,11 @@ body.dark-mode .nav-tabs {
 .btn-primary {
     background: var(--primary-gradient);
     color: white;
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
 }
 .btn-primary:hover {
     transform: translateY(-1.5px);
-    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+    box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
 }
 .btn-secondary { background: #64748b; color: white; }
 .btn-secondary:hover { background: #475569; transform: translateY(-1px); }
@@ -369,7 +369,7 @@ body.dark-mode .results-container {
 
 /* Pediatric Advice Dynamic Card */
 .advice-card {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.04) 0%, rgba(124, 58, 237, 0.04) 100%);
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.04) 0%, rgba(14, 165, 233, 0.04) 100%);
     border: 1.5px dashed var(--primary-color);
     border-radius: 12px;
     padding: 20px;
@@ -448,7 +448,7 @@ table { width: 100%; border-collapse: collapse; background: var(--card-bg); font
 th, td { padding: 14px 16px; text-align: left; border-bottom: 1.5px solid var(--border-color); }
 th { background: rgba(15, 23, 42, 0.02); color: var(--text-color); font-weight: 750; }
 body.dark-mode th { background: rgba(255, 255, 255, 0.02); }
-tr:hover { background: rgba(79, 70, 229, 0.03); }
+tr:hover { background: rgba(2, 132, 199, 0.03); }
 
 /* Utils */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
@@ -757,7 +757,7 @@ body.dark-mode .sidebar-header { background: rgba(255, 255, 255, 0.02); }
         display: flex !important;
         flex-direction: column !important;
         border: none !important;
-        border-left: 4px solid #4f46e5 !important;
+        border-left: 4px solid #0284c7 !important;
         border-radius: 8px !important;
         box-shadow: none !important;
         background: white !important;
@@ -774,7 +774,7 @@ body.dark-mode .sidebar-header { background: rgba(255, 255, 255, 0.02); }
         display: block !important;
         font-size: 14pt !important;
         font-weight: 800 !important;
-        color: #1e1b4b !important;
+        color: #0c4a6e !important;
         margin: 0 0 10px 0 !important;
         border-bottom: 1.5px solid #e0e7ff !important;
         padding-bottom: 8px !important;
@@ -806,7 +806,7 @@ body.dark-mode .sidebar-header { background: rgba(255, 255, 255, 0.02); }
         gap: 18px !important;
         padding: 14px 20px !important;
         margin-bottom: 20px !important;
-        border: 2px solid #4f46e5 !important;
+        border: 2px solid #0284c7 !important;
         border-radius: 10px !important;
         background: #f5f3ff !important;
         page-break-inside: avoid !important;
@@ -823,7 +823,7 @@ body.dark-mode .sidebar-header { background: rgba(255, 255, 255, 0.02); }
     .pph-title {
         font-size: 13pt !important;
         font-weight: 900 !important;
-        color: #1e1b4b !important;
+        color: #0c4a6e !important;
         margin-bottom: 5px !important;
         letter-spacing: -0.3px !important;
     }
@@ -833,7 +833,7 @@ body.dark-mode .sidebar-header { background: rgba(255, 255, 255, 0.02); }
         line-height: 1.6 !important;
     }
     .pph-meta strong {
-        color: #1e1b4b !important;
+        color: #0c4a6e !important;
         font-weight: 700 !important;
     }
     .pph-date-col {
@@ -851,6 +851,6 @@ body.dark-mode .sidebar-header { background: rgba(255, 255, 255, 0.02); }
     .pph-date {
         font-size: 10pt !important;
         font-weight: 800 !important;
-        color: #1e1b4b !important;
+        color: #0c4a6e !important;
     }
 }
