@@ -609,11 +609,61 @@ window.chartInstancesList = [];
             // Fallback key update if original chartKey didn't match standard
             const activeChartConfig = window.OfficialChartsDB[chartKey] || chartConfig;
 
+            // Helper: format age in Indonesian text
+            const formatAgeIndonesian = (months) => {
+                const totalMonths = Math.round(Number(months));
+                const years = Math.floor(totalMonths / 12);
+                const remMonths = totalMonths % 12;
+                if (years === 0) return `${remMonths} bln`;
+                if (remMonths === 0) return `${years} th`;
+                return `${years}th${remMonths}bln`;
+            };
+
             // 4. Hitung Koordinat dan Gambar Titik
             
+            // Resolve the actual chart key to get the correct math bounds for validation
+            const getResolvedConfig = (key, xVal) => {
+                let resolvedKey = key;
+                if (key === `cdc_female_stature` || key === `cdc_male_stature`) {
+                    resolvedKey = xVal < 138 ? `${key}_left` : `${key}_right`;
+                }
+                return window.OfficialChartsDB[resolvedKey] || null;
+            };
+
+            // Check if a value is within the chart grid's Y-axis range
+            const isYInBounds = (key, xVal, yVal) => {
+                const cfg = getResolvedConfig(key, xVal);
+                if (!cfg) return true; // no config = no validation, allow drawing
+                const mb = cfg.mathBounds;
+                // Allow 5% margin outside bounds for dots near edges
+                const margin = (mb.yMax - mb.yMin) * 0.05;
+                return yVal >= (mb.yMin - margin) && yVal <= (mb.yMax + margin);
+            };
+
             // Fungsi pembantu untuk menggambar satu titik
             const drawDot = (key, xVal, yVal, labelText, color = 'red', radius = 3.5) => {
                 if (yVal !== null && yVal !== undefined && !isNaN(xVal)) {
+                    // Check if the dot would be off-chart (Y out of grid bounds)
+                    if (!isYInBounds(key, xVal, yVal)) {
+                        // Draw a boundary annotation instead of an invisible dot
+                        const cfg = getResolvedConfig(key, xVal);
+                        if (cfg) {
+                            const mb = cfg.mathBounds;
+                            const boundaryY = yVal < mb.yMin ? mb.yMin : mb.yMax;
+                            const coords = window.calculateOfficialPixelCoords(key, Number(xVal), boundaryY);
+                            if (coords) {
+                                const arrowDir = yVal < mb.yMin ? 1 : -1; // 1=down arrow, -1=up arrow
+                                ctx.save();
+                                ctx.font = "bold 12px Arial";
+                                ctx.fillStyle = color;
+                                const arrow = arrowDir > 0 ? '▼' : '▲';
+                                ctx.fillText(`${arrow} ${labelText}`, coords.x - 10, coords.y + (arrowDir * 16));
+                                ctx.restore();
+                            }
+                        }
+                        return;
+                    }
+
                     const coords = window.calculateOfficialPixelCoords(key, Number(xVal), Number(yVal));
                     if (coords) {
                         ctx.beginPath();
@@ -648,13 +698,13 @@ window.chartInstancesList = [];
                 // Stature Grid Dots
                 drawDot(statKey, patient.umur_dipakai, patient.tb, `TB/U (${Number(patient.tb).toFixed(1)}cm)`);
                 if (Number.isFinite(patient.haMonth)) {
-                    drawDot(statKey, patient.haMonth, patient.tb, `HA`, 'blue');
+                    drawDot(statKey, patient.haMonth, patient.tb, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue');
                 }
                 
                 // Weight Grid Dots
                 drawDot(weightKey, patient.umur_dipakai, patient.bbs, `BB/U (${Number(patient.bbs).toFixed(1)}kg)`);
                 if (Number.isFinite(patient.waMonth)) {
-                    drawDot(weightKey, patient.waMonth, patient.bbs, `WA`, 'blue');
+                    drawDot(weightKey, patient.waMonth, patient.bbs, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue');
                 }
                 if (Number.isFinite(patient.bbi)) {
                     const bbiX = Number.isFinite(patient.haMonth) ? patient.haMonth : patient.umur_dipakai;
@@ -665,12 +715,12 @@ window.chartInstancesList = [];
                 if (indicator === 'stature' || indicator === 'tbu') {
                     drawDot(chartKey, xAxisValue, yAxisValue, `TB/U (${Number(yAxisValue).toFixed(1)}cm)`);
                     if (Number.isFinite(patient.haMonth)) {
-                        drawDot(chartKey, patient.haMonth, yAxisValue, `HA`, 'blue');
+                        drawDot(chartKey, patient.haMonth, yAxisValue, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue');
                     }
                 } else if (indicator === 'weight' || indicator === 'bbu') {
                     drawDot(chartKey, xAxisValue, yAxisValue, `BB/U (${Number(yAxisValue).toFixed(1)}kg)`);
                     if (Number.isFinite(patient.waMonth)) {
-                        drawDot(chartKey, patient.waMonth, yAxisValue, `WA`, 'blue');
+                        drawDot(chartKey, patient.waMonth, yAxisValue, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue');
                     }
                     if (Number.isFinite(patient.bbi)) {
                         const bbiX = Number.isFinite(patient.haMonth) ? patient.haMonth : patient.umur_dipakai;
@@ -698,16 +748,16 @@ window.chartInstancesList = [];
             const patientName = patient.nama ? patient.nama.substring(0, 25) : 'Pasien';
             ctx.fillText(`Nama: ${patientName}`, boxX + 20, boxY + 35);
             
-            const formatAgeIndonesian = (months) => {
-                const totalMonths = Math.round(Number(months));
+            // Use full format for header box
+            const ageTextFull = (() => {
+                const totalMonths = Math.round(Number(patient.umur_dipakai));
                 const years = Math.floor(totalMonths / 12);
                 const remMonths = totalMonths % 12;
                 if (years === 0) return `${remMonths} bulan`;
                 if (remMonths === 0) return `${years} tahun`;
                 return `${years} tahun ${remMonths} bulan`;
-            };
-            const ageText = formatAgeIndonesian(patient.umur_dipakai);
-            ctx.fillText(`Usia: ${ageText}`, boxX + 20, boxY + 65);
+            })();
+            ctx.fillText(`Usia: ${ageTextFull}`, boxX + 20, boxY + 65);
             
             // 6. Download Image
             const ageStr = activeRef === 'who' ? '0-5_Tahun' : '2-20_Tahun';

@@ -154,11 +154,58 @@
             });
         }
 
+        // ── HA / WA / BBI clinical dots ──────────────────────────────────────
+        let hasHADot = false, hasWADot = false, hasBBIDot = false;
+
+        if (ind === 'stature' && Number.isFinite(patient.haMonth) && Number.isFinite(patientY)) {
+            if (patient.haMonth >= xMin && patient.haMonth <= xMax) {
+                datasets.push({
+                    type: 'scatter', label: '🔵 HA (Height Age)',
+                    _endLabel: null,
+                    data: [{ x: patient.haMonth, y: patientY }],
+                    borderColor: '#2563EB', backgroundColor: '#2563EB',
+                    pointStyle: 'triangle', pointRadius: 7, pointHoverRadius: 9,
+                    borderWidth: 2, showLine: false, yAxisID: 'y'
+                });
+                hasHADot = true;
+            }
+        }
+
+        if (ind === 'weight') {
+            if (Number.isFinite(patient.waMonth) && Number.isFinite(patientY)) {
+                if (patient.waMonth >= xMin && patient.waMonth <= xMax) {
+                    datasets.push({
+                        type: 'scatter', label: '🔵 WA (Weight Age)',
+                        _endLabel: null,
+                        data: [{ x: patient.waMonth, y: patientY }],
+                        borderColor: '#2563EB', backgroundColor: '#2563EB',
+                        pointStyle: 'triangle', pointRadius: 7, pointHoverRadius: 9,
+                        borderWidth: 2, showLine: false, yAxisID: 'y'
+                    });
+                    hasWADot = true;
+                }
+            }
+            if (Number.isFinite(patient.bbi)) {
+                const bbiX = Number.isFinite(patient.haMonth) ? patient.haMonth : age;
+                if (bbiX >= xMin && bbiX <= xMax) {
+                    datasets.push({
+                        type: 'scatter', label: '🟢 BBI (Ideal Weight)',
+                        _endLabel: null,
+                        data: [{ x: bbiX, y: patient.bbi }],
+                        borderColor: '#16A34A', backgroundColor: '#16A34A',
+                        pointStyle: 'rectRot', pointRadius: 7, pointHoverRadius: 9,
+                        borderWidth: 2, showLine: false, yAxisID: 'y'
+                    });
+                    hasBBIDot = true;
+                }
+            }
+        }
+
         // ── Axes ─────────────────────────────────────────────────────────────
         const xAxis = window.GrowthChartShared.createYearAxis(xMin, xMax, xLabel, { microStep: 6, yearAccent: true });
         const yAxis = window.GrowthChartShared.createNumericAxis(yLabel, 'left', { maxTicksLimit: 14 });
 
-        const legendHtml = buildLegend(sex, pcts, isBmi);
+        const legendHtml = buildLegend(sex, pcts, isBmi, hasHADot, hasWADot, hasBBIDot);
 
         return {
             title:    titleText,
@@ -173,6 +220,10 @@
             referenceLabel: 'CDC Clinical Growth Charts (2–20 tahun)',
             tooltipLabel(context) {
                 if (context.dataset.type === 'scatter') {
+                    const lbl = context.dataset.label || '';
+                    if (lbl.includes('HA')) return `HA: usia ${Number(context.parsed.x).toFixed(1)} bln (TB ${Number(context.parsed.y).toFixed(1)} cm)`;
+                    if (lbl.includes('WA')) return `WA: usia ${Number(context.parsed.x).toFixed(1)} bln (BB ${Number(context.parsed.y).toFixed(1)} kg)`;
+                    if (lbl.includes('BBI')) return `BBI: ${Number(context.parsed.y).toFixed(2)} kg pada usia HA ${Number(context.parsed.x).toFixed(1)} bln`;
                     return `Pasien: usia ${Number(context.parsed.x).toFixed(1)} bln, y=${Number(context.parsed.y).toFixed(2)}`;
                 }
                 return `${context.dataset.label}: ${Number(context.parsed.y).toFixed(2)}`;
@@ -180,7 +231,7 @@
         };
     }
 
-    function buildLegend(gender, pcts, isBmi) {
+    function buildLegend(gender, pcts, isBmi, hasHA, hasWA, hasBBI) {
         const items = [
             ...pcts.map(p => ({
                 color: getCurveColor(p, gender, isBmi),
@@ -192,8 +243,11 @@
             })),
             { color: '#000', label: 'Pasien ●', dot: true }
         ];
+        if (hasHA) items.push({ color: '#2563EB', label: 'HA (Height Age) ▲', dot: true });
+        if (hasWA) items.push({ color: '#2563EB', label: 'WA (Weight Age) ▲', dot: true });
+        if (hasBBI) items.push({ color: '#16A34A', label: 'BBI (Ideal Weight) ◆', dot: true });
         return `<div class="legend-group">` + items.map(it => {
-            if (it.dot) return `<div class="legend-item"><div class="legend-point"></div>${it.label}</div>`;
+            if (it.dot) return `<div class="legend-item"><div class="legend-point" style="background:${it.color};"></div>${it.label}</div>`;
             return `<div class="legend-item"><div class="legend-color ${it.dashed ? 'dashed' : ''}" style="background:${it.color};color:${it.color};"></div>${it.label}</div>`;
         }).join('') + `</div>`;
     }
