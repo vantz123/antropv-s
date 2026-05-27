@@ -1057,7 +1057,7 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'weight');
             rangeText = getRangeCDC(pctVal, 'weight');
         }
-        summaryBBU = rangeText;
+        summaryBBU = `${hasil.bbu_ref === 'WHO' ? hasil.bbu.toFixed(2) + ' Z' : 'P' + pctVal} (${rangeText})`;
         html += renderCard('⚖️', 'BB/U (Weight-for-Age)', hasil.bbu_ref, hasil.bbu, pctVal, cls, rangeText, null, hasil.bbu_ref_detail);
     }
 
@@ -1072,7 +1072,7 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'stature');
             rangeText = getRangeCDC(pctVal, 'stature');
         }
-        summaryTBU = rangeText;
+        summaryTBU = `${hasil.tbu_ref === 'WHO' ? hasil.tbu.toFixed(2) + ' Z' : 'P' + pctVal} (${rangeText})`;
         html += renderCard('📏', 'TB/U (Height-for-Age)', hasil.tbu_ref, hasil.tbu, pctVal, cls, rangeText, null, hasil.tbu_ref_detail);
     }
 
@@ -1087,24 +1087,26 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'bmi');
             rangeText = getRangeCDC(pctVal, 'bmi');
         }
-        summaryIMTU = rangeText;
+        summaryIMTU = `${hasil.imtu_ref === 'WHO' ? hasil.imtu.toFixed(2) + ' Z' : 'P' + pctVal} (${rangeText})`;
         html += renderCard('📐', 'IMT/U (BMI-for-Age)', hasil.imtu_ref, hasil.imtu, pctVal, cls, rangeText, `IMT: ${hasil.imt_value.toFixed(2)} kg/m²`, hasil.imtu_ref_detail);
     }
 
     if (hasil.bbtb !== undefined && hasil.bbtb_ref === 'WHO') {
-        summaryBBTB = getRangeWHO(hasil.bbtb, 'bbtb');
+        summaryBBTB = `${hasil.bbtb.toFixed(2)} Z (${getRangeWHO(hasil.bbtb, 'bbtb')})`;
     }
 
     const bbtbMetricHtml = renderBBTBMetricCard(hasil, pBBI);
     if (bbtbMetricHtml) {
         html += bbtbMetricHtml;
         if (summaryBBTB === '-' && Number.isFinite(pBBI)) {
-            if (pBBI < 70) summaryBBTB = '< 70% BBI';
-            else if (pBBI < 80) summaryBBTB = '70-80% BBI';
-            else if (pBBI < 90) summaryBBTB = '80-90% BBI';
-            else if (pBBI <= 110) summaryBBTB = '90-110% BBI';
-            else if (pBBI <= 120) summaryBBTB = '110-120% BBI';
-            else summaryBBTB = '> 120% BBI';
+            let pBBIText = '';
+            if (pBBI < 70) pBBIText = '< 70% BBI';
+            else if (pBBI < 80) pBBIText = '70-80% BBI';
+            else if (pBBI < 90) pBBIText = '80-90% BBI';
+            else if (pBBI <= 110) pBBIText = '90-110% BBI';
+            else if (pBBI <= 120) pBBIText = '110-120% BBI';
+            else pBBIText = '> 120% BBI';
+            summaryBBTB = `${pBBI.toFixed(1)}% (${pBBIText})`;
         }
     }
 

@@ -145,7 +145,7 @@
                 borderWidth:     cfg.sd === 0 ? cfg.width : cfg.width,
                 borderDash:      cfg.dash,
                 pointRadius:     0,
-                tension:         0.18,
+                tension:         0,
                 fill:            fillTarget,
                 yAxisID:         'y'
             };

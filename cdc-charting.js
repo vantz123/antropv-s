@@ -91,7 +91,7 @@
             borderWidth:     isMedian ? 2.8 : isClinCut ? 2.0 : 1.3,
             borderDash:      isMedian ? [] : isClinCut ? [4, 3] : [6, 4],
             pointRadius:     0,
-            tension:         0.18,
+            tension:         0,
             fill:            false,
             yAxisID:         'y'
         };
