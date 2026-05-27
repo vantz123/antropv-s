@@ -308,12 +308,18 @@
             <p>Wajib diterapkan jika Usia Gestasi &lt; 37 minggu dan usia saat ini &lt; 24 bulan.</p>
         </div>
         <div class="result-card">
-            <h3>✉️ Hubungi Kami (Contact)</h3>
-            <p style="font-size: 0.9em; color: var(--text-muted); margin-bottom: 10px;">Pilih tujuan email sesuai kebutuhan Anda:</p>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <a href="mailto:admin@example.com?subject=Laporan%20Keluhan%20Admin" class="btn btn-primary" style="text-decoration:none; text-align:center; padding:8px;">Kirim ke Admin (Keluhan Teknis)</a>
-                <a href="mailto:support@example.com?subject=Pertanyaan%20User" class="btn btn-secondary" style="text-decoration:none; text-align:center; padding:8px;">Kirim ke Tim Support (User)</a>
+            <h3>✉️ Lapor Kendala</h3>
+            <p style="font-size: 0.9em; color: var(--text-muted); margin-bottom: 10px;">Pilih bagian yang berkendala untuk mengirim laporan ke Admin.</p>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <select id="keluhan_kategori" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; font-family: inherit;">
+                    <option value="Hitungan Antropometri (Z-Score/Persentil)">Hitungan Antropometri (Z-Score/Persentil)</option>
+                    <option value="Titik Plot Kurva / Grafik">Titik Plot Kurva / Grafik</option>
+                    <option value="Parser Data Input">Parser Data Input</option>
+                    <option value="Kalkulator BBI / RDA">Kalkulator BBI / RDA</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
             </div>
+            <button class="btn btn-primary" style="width:100%; padding: 10px;" onclick="kirimLaporanAdmin()">Kirim Laporan via Email</button>
         </div>
     </div>
 </div>

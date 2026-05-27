@@ -6,6 +6,16 @@ function toggleSidebar() {
     overlay.classList.toggle('active');
 }
 
+function kirimLaporanAdmin() {
+    const selectEl = document.getElementById('keluhan_kategori');
+    let kategori = selectEl ? selectEl.value : 'Lainnya';
+    const emailAdmin = 'admin@example.com'; // ganti dengan email admin sebenarnya jika ada
+    const subject = encodeURIComponent(`Laporan Kendala Aplikasi: ${kategori}`);
+    const body = encodeURIComponent(`Halo Admin,\n\nSaya menemukan kendala pada bagian: ${kategori}.\n\nDetail Keluhan:\n[Silakan jelaskan keluhan atau error yang Anda alami di sini...]\n\nTerima kasih.`);
+    
+    window.location.href = `mailto:${emailAdmin}?subject=${subject}&body=${body}`;
+}
+
 // Tab logic
 function showTab(tab, btn) {
     document.querySelectorAll('.tab-content').forEach((el) => el.classList.remove('active'));
