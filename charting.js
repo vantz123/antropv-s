@@ -623,11 +623,7 @@ window.chartInstancesList = [];
             
             // Resolve the actual chart key to get the correct math bounds for validation
             const getResolvedConfig = (key, xVal) => {
-                let resolvedKey = key;
-                if (key === `cdc_female_stature` || key === `cdc_male_stature`) {
-                    resolvedKey = xVal < 138 ? `${key}_left` : `${key}_right`;
-                }
-                return window.OfficialChartsDB[resolvedKey] || null;
+                return window.OfficialChartsDB[key] || null;
             };
 
             // Check if a value is within the chart grid's Y-axis range
