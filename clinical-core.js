@@ -1091,22 +1091,21 @@ function hitungSemua() {
         html += renderCard('📐', 'IMT/U (BMI-for-Age)', hasil.imtu_ref, hasil.imtu, pctVal, cls, rangeText, `IMT: ${hasil.imt_value.toFixed(2)} kg/m²`, hasil.imtu_ref_detail);
     }
 
-    if (hasil.bbtb !== undefined && hasil.bbtb_ref === 'WHO') {
-        summaryBBTB = getRangeWHO(hasil.bbtb, 'bbtb');
-    }
+    // Gunakan nilai persen BBI untuk Ringkasan BB/TB selalu
+    // (sesuai permintaan user)
 
     const bbtbMetricHtml = renderBBTBMetricCard(hasil, pBBI);
     if (bbtbMetricHtml) {
         html += bbtbMetricHtml;
-        if (summaryBBTB === '-' && Number.isFinite(pBBI)) {
+        if (Number.isFinite(pBBI)) {
             let pBBIText = '';
-            if (pBBI < 70) pBBIText = '< 70% BBI';
-            else if (pBBI < 80) pBBIText = '70-80% BBI';
-            else if (pBBI < 90) pBBIText = '80-90% BBI';
-            else if (pBBI <= 110) pBBIText = '90-110% BBI';
-            else if (pBBI <= 120) pBBIText = '110-120% BBI';
-            else pBBIText = '> 120% BBI';
-            summaryBBTB = pBBIText;
+            if (pBBI < 70) pBBIText = '< 70% BBI (Gizi Buruk)';
+            else if (pBBI < 80) pBBIText = '70-80% BBI (Gizi Kurang)';
+            else if (pBBI < 90) pBBIText = '80-90% BBI (Gizi Kurang/Normal)';
+            else if (pBBI <= 110) pBBIText = '90-110% BBI (Normal)';
+            else if (pBBI <= 120) pBBIText = '110-120% BBI (Overweight)';
+            else pBBIText = '> 120% BBI (Obesitas)';
+            summaryBBTB = `${pBBI.toFixed(1)}% (${pBBIText})`;
         }
     }
 
