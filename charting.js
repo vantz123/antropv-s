@@ -641,7 +641,7 @@ window.chartInstancesList = [];
             };
 
             // Fungsi pembantu untuk menggambar satu titik
-            const drawDot = (key, xVal, yVal, labelText, color = 'red', radius = 3.5) => {
+            const drawDot = (key, xVal, yVal, labelText, color = 'red', offsetType = 'tr') => {
                 if (yVal !== null && yVal !== undefined && !isNaN(xVal)) {
                     // Check if the dot would be off-chart (Y out of grid bounds)
                     if (!isYInBounds(key, xVal, yVal)) {
@@ -685,7 +685,29 @@ window.chartInstancesList = [];
 
                         ctx.font = "bold 14px Arial";
                         ctx.fillStyle = color;
-                        ctx.fillText(labelText, coords.x + 8, coords.y - 8);
+                        
+                        let textX = coords.x + 8;
+                        let textY = coords.y - 8;
+                        const textWidth = ctx.measureText(labelText).width;
+                        
+                        if (offsetType === 'tl') {
+                            textX = coords.x - 8 - textWidth;
+                            textY = coords.y - 8;
+                        } else if (offsetType === 'bl') {
+                            textX = coords.x - 8 - textWidth;
+                            textY = coords.y + 16;
+                        } else if (offsetType === 'br') {
+                            textX = coords.x + 8;
+                            textY = coords.y + 16;
+                        } else if (offsetType === 'top') {
+                            textX = coords.x - (textWidth / 2);
+                            textY = coords.y - 12;
+                        } else if (offsetType === 'bottom') {
+                            textX = coords.x - (textWidth / 2);
+                            textY = coords.y + 20;
+                        }
+                        
+                        ctx.fillText(labelText, textX, textY);
                     }
                 }
             };
@@ -696,38 +718,38 @@ window.chartInstancesList = [];
                 const weightKey = `cdc_${patient.gender}_weight`;
                 
                 // Stature Grid Dots
-                drawDot(statKey, patient.umur_dipakai, patient.tb, `TB/U (${Number(patient.tb).toFixed(1)}cm)`);
+                drawDot(statKey, patient.umur_dipakai, patient.tb, `TB/U (${Number(patient.tb).toFixed(1)}cm)`, 'red', 'tr');
                 if (Number.isFinite(patient.haMonth)) {
-                    drawDot(statKey, patient.haMonth, patient.tb, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue');
+                    drawDot(statKey, patient.haMonth, patient.tb, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue', 'tl');
                 }
                 
                 // Weight Grid Dots
-                drawDot(weightKey, patient.umur_dipakai, patient.bbs, `BB/U (${Number(patient.bbs).toFixed(1)}kg)`);
+                drawDot(weightKey, patient.umur_dipakai, patient.bbs, `BB/U (${Number(patient.bbs).toFixed(1)}kg)`, 'red', 'tr');
                 if (Number.isFinite(patient.waMonth)) {
-                    drawDot(weightKey, patient.waMonth, patient.bbs, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue');
+                    drawDot(weightKey, patient.waMonth, patient.bbs, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue', 'tl');
                 }
                 if (Number.isFinite(patient.bbi)) {
                     const bbiX = Number.isFinite(patient.haMonth) ? patient.haMonth : patient.umur_dipakai;
-                    drawDot(weightKey, bbiX, patient.bbi, `BBI (${Number(patient.bbi).toFixed(1)}kg)`, 'green');
+                    drawDot(weightKey, bbiX, patient.bbi, `BBI (${Number(patient.bbi).toFixed(1)}kg)`, 'green', 'br');
                 }
             } else {
                 // Untuk WHO / CDC Chart lainnya (Single Grid)
                 if (indicator === 'stature' || indicator === 'tbu') {
-                    drawDot(chartKey, xAxisValue, yAxisValue, `TB/U (${Number(yAxisValue).toFixed(1)}cm)`);
+                    drawDot(chartKey, xAxisValue, yAxisValue, `TB/U (${Number(yAxisValue).toFixed(1)}cm)`, 'red', 'tr');
                     if (Number.isFinite(patient.haMonth)) {
-                        drawDot(chartKey, patient.haMonth, yAxisValue, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue');
+                        drawDot(chartKey, patient.haMonth, yAxisValue, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue', 'tl');
                     }
                 } else if (indicator === 'weight' || indicator === 'bbu') {
-                    drawDot(chartKey, xAxisValue, yAxisValue, `BB/U (${Number(yAxisValue).toFixed(1)}kg)`);
+                    drawDot(chartKey, xAxisValue, yAxisValue, `BB/U (${Number(yAxisValue).toFixed(1)}kg)`, 'red', 'tr');
                     if (Number.isFinite(patient.waMonth)) {
-                        drawDot(chartKey, patient.waMonth, yAxisValue, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue');
+                        drawDot(chartKey, patient.waMonth, yAxisValue, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue', 'tl');
                     }
                     if (Number.isFinite(patient.bbi)) {
                         const bbiX = Number.isFinite(patient.haMonth) ? patient.haMonth : patient.umur_dipakai;
-                        drawDot(chartKey, bbiX, patient.bbi, `BBI (${Number(patient.bbi).toFixed(1)}kg)`, 'green');
+                        drawDot(chartKey, bbiX, patient.bbi, `BBI (${Number(patient.bbi).toFixed(1)}kg)`, 'green', 'br');
                     }
                 } else {
-                    drawDot(chartKey, xAxisValue, yAxisValue, `${yAxisText}`);
+                    drawDot(chartKey, xAxisValue, yAxisValue, `${yAxisText}`, 'red', 'tr');
                 }
             }
 
