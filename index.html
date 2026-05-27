@@ -15,6 +15,7 @@
         <span class="branding">made by V's Project</span>
     </div>
     <div class="header-actions">
+        <button id="help-toggle" class="icon-btn" type="button" title="Info & Bantuan" onclick="toggleSidebar()">❓</button>
         <button id="view-toggle" class="icon-btn" type="button" title="Desktop View Mode" onclick="toggleViewMode()">📱</button>
         <button id="theme-toggle" class="icon-btn" type="button" title="Toggle Dark Mode" onclick="toggleTheme()">🌙</button>
     </div>
@@ -280,7 +281,7 @@
 <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar" class="sidebar">
     <div class="sidebar-header">
-        <h2>⚙️ Settings & Help</h2>
+        <h2>❓ Info & Bantuan</h2>
         <button class="close-btn" onclick="toggleSidebar()">✖</button>
     </div>
     <div class="sidebar-content">
@@ -305,6 +306,14 @@
         <div class="result-card">
             <h3>🍼 Koreksi Usia Prematur</h3>
             <p>Wajib diterapkan jika Usia Gestasi &lt; 37 minggu dan usia saat ini &lt; 24 bulan.</p>
+        </div>
+        <div class="result-card">
+            <h3>✉️ Hubungi Kami (Contact)</h3>
+            <p style="font-size: 0.9em; color: var(--text-muted); margin-bottom: 10px;">Pilih tujuan email sesuai kebutuhan Anda:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <a href="mailto:admin@example.com?subject=Laporan%20Keluhan%20Admin" class="btn btn-primary" style="text-decoration:none; text-align:center; padding:8px;">Kirim ke Admin (Keluhan Teknis)</a>
+                <a href="mailto:support@example.com?subject=Pertanyaan%20User" class="btn btn-secondary" style="text-decoration:none; text-align:center; padding:8px;">Kirim ke Tim Support (User)</a>
+            </div>
         </div>
     </div>
 </div>
