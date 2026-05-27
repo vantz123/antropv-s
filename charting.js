@@ -642,6 +642,7 @@ window.chartInstancesList = [];
 
             // Fungsi pembantu untuk menggambar satu titik
             const drawDot = (key, xVal, yVal, labelText, color = 'red', offsetType = 'tr') => {
+                const radius = 3.5;
                 if (yVal !== null && yVal !== undefined && !isNaN(xVal)) {
                     // Check if the dot would be off-chart (Y out of grid bounds)
                     if (!isYInBounds(key, xVal, yVal)) {
