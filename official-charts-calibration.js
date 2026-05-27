@@ -8,11 +8,17 @@ window.OfficialChartsDB = {
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 12, "yMax": 35},
         "pixelBounds": {"xMin": 213.2, "xMax": 996.0, "yMin": 1282.4, "yMax": 237.6}
     },
-    // CDC Stature Full Grid (Ages 2 to 20, i.e., 24 to 240 months)
-    "cdc_female_stature": {
+    // CDC Stature Left Grid (Ages 2 to 11.5, i.e., 24 to 138 months)
+    "cdc_female_stature_left": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 80, "yMax": 190},
-        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1116.4, "yMax": 228.6}
+        "mathBounds": {"xMin": 24, "xMax": 138, "yMin": 80, "yMax": 160},
+        "pixelBounds": {"xMin": 218.4, "xMax": 626.2, "yMin": 1116.4, "yMax": 470.7}
+    },
+    // CDC Stature Right Grid (Ages 11.5 to 20, i.e., 138 to 240 months)
+    "cdc_female_stature_right": {
+        "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
+        "mathBounds": {"xMin": 138, "xMax": 240, "yMin": 150, "yMax": 190},
+        "pixelBounds": {"xMin": 626.2, "xMax": 991.2, "yMin": 927.9, "yMax": 780.8}
     },
     "cdc_female_weight": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
@@ -24,11 +30,17 @@ window.OfficialChartsDB = {
         "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 12, "yMax": 35},
         "pixelBounds": {"xMin": 213.2, "xMax": 996.0, "yMin": 1282.4, "yMax": 237.6}
     },
-    // CDC Stature Full Grid (Ages 2 to 20, i.e., 24 to 240 months)
-    "cdc_male_stature": {
+    // CDC Stature Left Grid (Ages 2 to 11.5, i.e., 24 to 138 months)
+    "cdc_male_stature_left": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
-        "mathBounds": {"xMin": 24, "xMax": 240, "yMin": 80, "yMax": 190},
-        "pixelBounds": {"xMin": 218.4, "xMax": 991.2, "yMin": 1116.4, "yMax": 228.6}
+        "mathBounds": {"xMin": 24, "xMax": 138, "yMin": 80, "yMax": 160},
+        "pixelBounds": {"xMin": 218.4, "xMax": 626.2, "yMin": 1116.4, "yMax": 470.7}
+    },
+    // CDC Stature Right Grid (Ages 11.5 to 20, i.e., 138 to 240 months)
+    "cdc_male_stature_right": {
+        "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
+        "mathBounds": {"xMin": 138, "xMax": 240, "yMin": 150, "yMax": 190},
+        "pixelBounds": {"xMin": 626.2, "xMax": 991.2, "yMin": 927.9, "yMax": 780.8}
     },
     "cdc_male_weight": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
@@ -93,7 +105,11 @@ window.calculateOfficialPixelCoords = function(chartKey, xAxisValue, yAxisValue)
     let resolvedKey = chartKey;
     
     // Split coordinate grids dynamically for CDC Stature based on Age in months (11.5 years = 138 months)
-
+    if (chartKey === 'cdc_female_stature') {
+        resolvedKey = xAxisValue < 138 ? 'cdc_female_stature_left' : 'cdc_female_stature_right';
+    } else if (chartKey === 'cdc_male_stature') {
+        resolvedKey = xAxisValue < 138 ? 'cdc_male_stature_left' : 'cdc_male_stature_right';
+    }
 
     const chart = window.OfficialChartsDB[resolvedKey];
     if (!chart) return null;
