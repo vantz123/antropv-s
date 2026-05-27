@@ -118,7 +118,7 @@ window.chartInstancesList = [];
         if (bbiGender && selected) bbiGender.value = selected;
         const tpgGender = document.getElementById('tpg_gender');
         if (tpgGender && selected) tpgGender.value = selected;
-        const hasCoreFields = ['umur_bulan','bbs','tb'].every((id) => {
+        const hasCoreFields = ['umur_bulan', 'bbs', 'tb'].every((id) => {
             const el = document.getElementById(id);
             return el && String(el.value).trim() !== '';
         });
@@ -150,7 +150,7 @@ window.chartInstancesList = [];
         const ageInMonths = patient && Number.isFinite(patient.umur_dipakai) ? Number(patient.umur_dipakai) : 0;
         const activeRef = getRefActive(ageInMonths);
         const module = getRefModule(activeRef);
-        
+
         // Sync ref dropdown if auto is selected
         const refSelect = document.getElementById('ref_grafik');
         if (refSelect && refSelect.value === 'auto') {
@@ -438,22 +438,22 @@ window.chartInstancesList = [];
 
     function downloadCanvasAsImage(canvas, filename) {
         if (!canvas) return;
-        
+
         const link = document.createElement('a');
         link.download = filename;
-        
+
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = canvas.width;
         tempCanvas.height = canvas.height;
         const tempCtx = tempCanvas.getContext('2d');
-        
+
         // Fill white background so image isn't transparent
         tempCtx.fillStyle = '#ffffff';
         tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-        
+
         // Draw original canvas content
         tempCtx.drawImage(canvas, 0, 0);
-        
+
         link.href = tempCanvas.toDataURL('image/png');
         document.body.appendChild(link);
         link.click();
@@ -463,14 +463,14 @@ window.chartInstancesList = [];
     async function downloadActiveChart() {
         const indicator = document.getElementById('indikator_grafik').value;
         if (!indicator) return;
-        
+
         const btn = document.getElementById('btn-download-active');
         const oldText = btn.innerHTML;
         if (btn) {
             btn.innerHTML = '⏳ Memproses PDF...';
             btn.disabled = true;
         }
-        
+
         try {
             await downloadChartBackground(indicator);
         } finally {
@@ -484,14 +484,14 @@ window.chartInstancesList = [];
     async function downloadAllCharts() {
         const canvases = document.querySelectorAll('#all-charts-view canvas');
         if (canvases.length === 0) return;
-        
+
         const btn = document.getElementById('btn-download-all');
         const oldText = btn.innerHTML;
         if (btn) {
             btn.innerHTML = '⏳ Memproses PDF...';
             btn.disabled = true;
         }
-        
+
         try {
             for (let canvas of canvases) {
                 const idParts = canvas.id.split('-');
@@ -514,11 +514,11 @@ window.chartInstancesList = [];
             alert("Mohon hitung data pasien terlebih dahulu.");
             return;
         }
-        
+
         const age = Number(patient.umur_dipakai);
         let activeRef = getRefActive(age); // 'who' or 'cdc'
         const gender = getActiveGender(patient);
-        
+
         // Mapping indicator dari AntroBuild ke nama kunci di OfficialChartsDB
         let normalizedInd = indicator;
         if (indicator === 'stature' || indicator === 'weight' || indicator === 'bmi') {
@@ -556,7 +556,7 @@ window.chartInstancesList = [];
         }
 
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-        
+
         try {
             // 1. Load PDF
             const loadingTask = window.pdfjsLib.getDocument(chartConfig.pdfUrl);
@@ -620,15 +620,26 @@ window.chartInstancesList = [];
             };
 
             // 4. Hitung Koordinat dan Gambar Titik
-            
+
             // Resolve the actual chart key to get the correct math bounds for validation
-            const getResolvedConfig = (key, xVal) => {
-                return window.OfficialChartsDB[key] || null;
+            // Uses same fallback logic as calculateOfficialPixelCoords:
+            // When age>=138 but height < right grid's yMin, fall back to left grid
+            const getResolvedConfig = (key, xVal, yVal) => {
+                let resolvedKey = key;
+                if (key === `cdc_female_stature` || key === `cdc_male_stature`) {
+                    if (xVal < 138) {
+                        resolvedKey = `${key}_left`;
+                    } else {
+                        const rightChart = window.OfficialChartsDB[`${key}_right`];
+                        resolvedKey = (yVal !== undefined && yVal < rightChart.mathBounds.yMin) ? `${key}_left` : `${key}_right`;
+                    }
+                }
+                return window.OfficialChartsDB[resolvedKey] || null;
             };
 
             // Check if a value is within the chart grid's Y-axis range
             const isYInBounds = (key, xVal, yVal) => {
-                const cfg = getResolvedConfig(key, xVal);
+                const cfg = getResolvedConfig(key, xVal, yVal);
                 if (!cfg) return true; // no config = no validation, allow drawing
                 const mb = cfg.mathBounds;
                 // Allow 5% margin outside bounds for dots near edges
@@ -643,7 +654,7 @@ window.chartInstancesList = [];
                     // Check if the dot would be off-chart (Y out of grid bounds)
                     if (!isYInBounds(key, xVal, yVal)) {
                         // Draw a boundary annotation instead of an invisible dot
-                        const cfg = getResolvedConfig(key, xVal);
+                        const cfg = getResolvedConfig(key, xVal, yVal);
                         if (cfg) {
                             const mb = cfg.mathBounds;
                             const boundaryY = yVal < mb.yMin ? mb.yMin : mb.yMax;
@@ -682,11 +693,11 @@ window.chartInstancesList = [];
 
                         ctx.font = "bold 14px Arial";
                         ctx.fillStyle = color;
-                        
+
                         let textX = coords.x + 8;
                         let textY = coords.y - 8;
                         const textWidth = ctx.measureText(labelText).width;
-                        
+
                         if (offsetType === 'tl') {
                             textX = coords.x - 8 - textWidth;
                             textY = coords.y - 8;
@@ -703,7 +714,7 @@ window.chartInstancesList = [];
                             textX = coords.x - (textWidth / 2);
                             textY = coords.y + 20;
                         }
-                        
+
                         ctx.fillText(labelText, textX, textY);
                     }
                 }
@@ -713,13 +724,13 @@ window.chartInstancesList = [];
             if (activeRef === 'cdc' && (indicator === 'stature' || indicator === 'tbu' || indicator === 'weight' || indicator === 'bbu')) {
                 const statKey = `cdc_${patient.gender}_stature`;
                 const weightKey = `cdc_${patient.gender}_weight`;
-                
+
                 // Stature Grid Dots
                 drawDot(statKey, patient.umur_dipakai, patient.tb, `TB/U (${Number(patient.tb).toFixed(1)}cm)`, 'red', 'tr');
                 if (Number.isFinite(patient.haMonth)) {
                     drawDot(statKey, patient.haMonth, patient.tb, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue', 'tl');
                 }
-                
+
                 // Weight Grid Dots
                 drawDot(weightKey, patient.umur_dipakai, patient.bbs, `BB/U (${Number(patient.bbs).toFixed(1)}kg)`, 'red', 'tr');
                 if (Number.isFinite(patient.waMonth)) {
@@ -755,7 +766,7 @@ window.chartInstancesList = [];
             const boxHeight = 85;
             const boxX = canvas.width - boxWidth - 30; // Kanan atas
             const boxY = 40;
-            
+
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
             ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
             ctx.lineWidth = 2;
@@ -766,7 +777,7 @@ window.chartInstancesList = [];
             ctx.fillStyle = "black";
             const patientName = patient.nama ? patient.nama.substring(0, 25) : 'Pasien';
             ctx.fillText(`Nama: ${patientName}`, boxX + 20, boxY + 35);
-            
+
             // Use full format for header box
             const ageTextFull = (() => {
                 const totalMonths = Math.round(Number(patient.umur_dipakai));
@@ -777,11 +788,11 @@ window.chartInstancesList = [];
                 return `${years} tahun ${remMonths} bulan`;
             })();
             ctx.fillText(`Usia: ${ageTextFull}`, boxX + 20, boxY + 65);
-            
+
             // 6. Download Image
             const ageStr = activeRef === 'who' ? '0-5_Tahun' : '2-20_Tahun';
             const genderStr = patient.gender === 'male' ? 'Laki-laki' : 'Perempuan';
-            
+
             let descriptiveInd = indicator.toUpperCase();
             if (indicator === 'stature' || indicator === 'tbu') descriptiveInd = 'Tinggi_Badan_Usia';
             if (indicator === 'weight' || indicator === 'bbu') descriptiveInd = 'Berat_Badan_Usia';
@@ -791,7 +802,7 @@ window.chartInstancesList = [];
 
             const patientSafeName = (patient.nama || 'Anonim').replace(/[^a-z0-9]/gi, '_');
             const filename = `Grafik_${activeRef.toUpperCase()}_${ageStr}_${descriptiveInd}_${genderStr}_${patientSafeName}.png`;
-            
+
             downloadCanvasAsImage(canvas, filename);
 
         } catch (err) {
@@ -812,14 +823,14 @@ window.chartInstancesList = [];
         canvas.width = 1200; canvas.height = 800;
         canvas.style.position = 'absolute'; canvas.style.left = '-9999px'; canvas.style.top = '-9999px';
         document.body.appendChild(canvas);
-        
+
         const chartResult = module.buildChart(patient, indicator, gender);
         if (!chartResult || chartResult.error) {
             alert("Gagal membangun chart: " + (chartResult ? chartResult.error : ""));
             document.body.removeChild(canvas);
             return;
         }
-        
+
         const ctx = canvas.getContext('2d');
         const chart = new Chart(ctx, {
             type: 'line',
@@ -829,11 +840,11 @@ window.chartInstancesList = [];
                 animation: false, responsive: false, maintainAspectRatio: false
             })
         });
-        
+
         setTimeout(() => {
             const ageStr = activeRef === 'who' ? '0-5_Tahun' : '2-20_Tahun';
             const genderStr = patient.gender === 'male' ? 'Laki-laki' : 'Perempuan';
-            
+
             let descriptiveInd = indicator.toUpperCase();
             if (indicator === 'stature' || indicator === 'tbu') descriptiveInd = 'Tinggi_Badan_Usia';
             if (indicator === 'weight' || indicator === 'bbu') descriptiveInd = 'Berat_Badan_Usia';
@@ -843,7 +854,7 @@ window.chartInstancesList = [];
 
             const patientSafeName = (patient.nama || 'Anonim').replace(/[^a-z0-9]/gi, '_');
             const filename = `Grafik_Fallback_${activeRef.toUpperCase()}_${ageStr}_${descriptiveInd}_${genderStr}_${patientSafeName}.png`;
-            
+
             downloadCanvasAsImage(canvas, filename);
             chart.destroy();
             document.body.removeChild(canvas);
@@ -859,7 +870,7 @@ window.chartInstancesList = [];
         const age = Number(patient.umur_dipakai);
         const activeRef = getRefActive(age);
         const module = getRefModule(activeRef);
-        
+
         const indicatorsToRender = module.options.filter(opt => {
             if (opt.value === 'lku' && !Number.isFinite(patient.lk)) return false;
             if (opt.value === 'bbpb' && (!Number.isFinite(patient.tb) || !Number.isFinite(patient.bbs))) return false;
