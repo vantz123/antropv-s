@@ -120,16 +120,16 @@
             <div class="form-group"><label>TB Ibu (cm)</label><input type="number" id="tb_ibu" step="0.1" placeholder="Opsional (Untuk TPG)"></div>
         </div>
         
-        <div class="action-bar" style="display:flex; justify-content:center; align-items:center; gap:15px; margin-top:20px; flex-wrap:wrap;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <label style="font-weight:600; margin:0;">Mode Kalkulasi:</label>
-                <select id="calculation_mode" onchange="syncCalculationModeUI()" style="padding:10px; border-radius:8px; border:2px solid #dee2e6;">
-                    <option value="auto_split">Auto Split</option>
-                    <option value="who_extended">WHO Only</option>
-                    <option value="cdc_only">CDC Only</option>
+        <div class="action-bar" style="display:flex; justify-content:center; align-items:center; gap:20px; margin-top:20px; flex-direction:column;">
+            <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+                <label style="font-weight:600; margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Mode Kalkulasi:</label>
+                <select id="calculation_mode" onchange="syncCalculationModeUI()" style="padding:10px 15px; border-radius:8px; border:2px solid #dee2e6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; cursor:pointer; font-weight:500;">
+                    <option value="auto_split">⚡ Auto Split</option>
+                    <option value="who_extended">🌐 WHO</option>
+                    <option value="cdc_only">🇺🇸 CDC</option>
                 </select>
             </div>
-            <div>
+            <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
                 <button class="btn btn-primary" onclick="hitungSemua()">🧮 Hitung Semua</button>
                 <button class="btn btn-secondary" onclick="resetForm()">🔄 Reset</button>
                 <button class="btn btn-success" onclick="simpanData()">💾 Simpan</button>

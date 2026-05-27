@@ -1041,6 +1041,11 @@ function hitungSemua() {
     }
 
 
+    // TAMPILAN DETAIL PERHITUNGAN (COLLAPSIBLE)
+    html += '<details class="collapse-box" style="margin-bottom: 20px; background: #fdfdfd; border: 1px solid #ddd; border-radius: 8px; padding: 15px;"><summary style="font-weight:bold; cursor:pointer; font-size:1.05em; color: var(--primary-color);">🔍 Lihat Detail Perhitungan Z-Score / Persentil</summary><div class="inner" style="margin-top: 15px;">';
+
+    let summaryBBU = '-', summaryTBU = '-', summaryIMTU = '-', summaryBBTB = '-';
+
     // BB/U
     if (hasil.bbu !== undefined) {
         let cls, rangeText, pctVal;
@@ -1052,6 +1057,7 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'weight');
             rangeText = getRangeCDC(pctVal, 'weight');
         }
+        summaryBBU = rangeText;
         html += renderCard('⚖️', 'BB/U (Weight-for-Age)', hasil.bbu_ref, hasil.bbu, pctVal, cls, rangeText, null, hasil.bbu_ref_detail);
     }
 
@@ -1066,6 +1072,7 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'stature');
             rangeText = getRangeCDC(pctVal, 'stature');
         }
+        summaryTBU = rangeText;
         html += renderCard('📏', 'TB/U (Height-for-Age)', hasil.tbu_ref, hasil.tbu, pctVal, cls, rangeText, null, hasil.tbu_ref_detail);
     }
 
@@ -1080,11 +1087,26 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'bmi');
             rangeText = getRangeCDC(pctVal, 'bmi');
         }
+        summaryIMTU = rangeText;
         html += renderCard('📐', 'IMT/U (BMI-for-Age)', hasil.imtu_ref, hasil.imtu, pctVal, cls, rangeText, `IMT: ${hasil.imt_value.toFixed(2)} kg/m²`, hasil.imtu_ref_detail);
     }
 
+    if (hasil.bbtb !== undefined && hasil.bbtb_ref === 'WHO') {
+        summaryBBTB = getRangeWHO(hasil.bbtb, 'bbtb');
+    }
+
     const bbtbMetricHtml = renderBBTBMetricCard(hasil, pBBI);
-    if (bbtbMetricHtml) html += bbtbMetricHtml;
+    if (bbtbMetricHtml) {
+        html += bbtbMetricHtml;
+        if (summaryBBTB === '-' && Number.isFinite(pBBI)) {
+            if (pBBI < 70) summaryBBTB = '< 70% BBI';
+            else if (pBBI < 80) summaryBBTB = '70-80% BBI';
+            else if (pBBI < 90) summaryBBTB = '80-90% BBI';
+            else if (pBBI <= 110) summaryBBTB = '90-110% BBI';
+            else if (pBBI <= 120) summaryBBTB = '110-120% BBI';
+            else summaryBBTB = '> 120% BBI';
+        }
+    }
 
     // LILA
     let lilaCls = null;
@@ -1099,16 +1121,21 @@ function hitungSemua() {
             <div class="range-info"><strong>Rentang:</strong> ${refRange}</div></div>`;
     }
 
+    html += '</div></details>';
+
     // ==================== RINGKASAN RINGKAS ====================
     const statusUtama = getStatusUtama(hasil, lilaCls, umur, waMonth, haMonth, umurKron, pBBI);
 
     let ringkasanHtml = `<div class="result-card" style="border-left-color:#28a745; background:#f0fdf4;">
         <h3>📋 Ringkasan</h3>
-        <table style="width:100%; font-size:1.05em;">
-            <tr><td style="padding:4px 0;"><strong>BBS</strong></td><td>${Number.isFinite(bbs) ? bbs + ' kg' : '-'}</td></tr>
-            <tr><td style="padding:4px 0;"><strong>BBI</strong></td><td>${bbiInfo && Number.isFinite(bbiInfo.bbi) ? bbiInfo.bbi.toFixed(2) + ' kg' : '-'}</td></tr>
-            <tr><td style="padding:4px 0;"><strong>WA</strong></td><td>${wa || '-'}</td></tr>
-            <tr><td style="padding:4px 0;"><strong>HA</strong></td><td>${ha || '-'}</td></tr>
+        <table style="width:100%; font-size:1.05em; line-height:1.6;">
+            <tr><td style="padding:4px 0; width:30%;"><strong>BB/U</strong></td><td>: ${summaryBBU}</td></tr>
+            <tr><td style="padding:4px 0;"><strong>TB/U</strong></td><td>: ${summaryTBU}</td></tr>
+            <tr><td style="padding:4px 0;"><strong>BB/TB</strong></td><td>: ${summaryBBTB}</td></tr>
+            <tr><td style="padding:4px 0;"><strong>IMT/U</strong></td><td>: ${summaryIMTU}</td></tr>
+            <tr><td style="padding:4px 0;"><strong>HA</strong></td><td>: ${ha || '-'}</td></tr>
+            <tr><td style="padding:4px 0;"><strong>WA</strong></td><td>: ${wa || '-'}</td></tr>
+            <tr><td style="padding:4px 0;"><strong>BBI</strong></td><td>: ${bbiInfo && Number.isFinite(bbiInfo.bbi) ? bbiInfo.bbi.toFixed(2) + ' kg' : '-'}</td></tr>
             <tr style="border-top:2px solid #28a745;"><td style="padding:10px 0 4px 0;"><strong>Status</strong></td><td style="padding-top:10px;">${statusUtama.html}</td></tr>
         </table>
     </div>`;
