@@ -331,27 +331,27 @@ function getRangeWHO(z, type) {
     const zs = (z >= 0 ? '+' : '') + z.toFixed(2);
     if (type === 'bbu') {
         if (z < -3) return `Z < -3 (Severely Underweight)`;
-        if (z < -2) return `-3 s/d -2 (Underweight)`;
-        if (z < -1) return `-2 s/d -1 (Normoweight)`;
-        if (z <= 1) return `-1 s/d +1 (Normoweight)`;
-        if (z <= 2) return `+1 s/d +2 (Risk Overweight)`;
+        if (z < -2) return `-3 < Z < -2 (Underweight)`;
+        if (z < -1) return `-2 < Z < -1 (Normoweight)`;
+        if (z <= 1) return `-1 ≤ Z ≤ +1 (Normoweight)`;
+        if (z <= 2) return `+1 < Z ≤ +2 (Risk Overweight)`;
         return `Z > +2 (Overweight)`;
     }
     if (type === 'tbu') {
         if (z < -3) return `Z < -3 (Severely Stunted)`;
-        if (z < -2) return `-3 s/d -2 (Stunted)`;
-        if (z < -1) return `-2 s/d -1 (Normoheight)`;
-        if (z <= 1) return `-1 s/d +1 (Normoheight)`;
-        if (z <= 2) return `+1 s/d +2 (Normoheight)`;
-        if (z <= 3) return `+2 s/d +3 (Tall)`;
+        if (z < -2) return `-3 < Z < -2 (Stunted)`;
+        if (z < -1) return `-2 < Z < -1 (Normoheight)`;
+        if (z <= 1) return `-1 ≤ Z ≤ +1 (Normoheight)`;
+        if (z <= 2) return `+1 < Z ≤ +2 (Normoheight)`;
+        if (z <= 3) return `+2 < Z ≤ +3 (Tall)`;
         return `Z > +3 (Very Tall)`;
     }
     if (type === 'imtu' || type === 'bbpb' || type === 'bbtb') {
         if (z < -3) return `Z < -3 (Severely Wasted)`;
-        if (z < -2) return `-3 s/d -2 (Wasted)`;
-        if (z <= 1) return `-2 s/d +1 (Normal)`;
-        if (z <= 2) return `+1 s/d +2 (Risk Overweight)`;
-        if (z <= 3) return `+2 s/d +3 (Overweight)`;
+        if (z < -2) return `-3 < Z < -2 (Wasted)`;
+        if (z <= 1) return `-2 ≤ Z ≤ +1 (Normal)`;
+        if (z <= 2) return `+1 < Z ≤ +2 (Risk Overweight)`;
+        if (z <= 3) return `+2 < Z ≤ +3 (Overweight)`;
         return `Z > +3 (Obese)`;
     }
     return '';
@@ -1057,7 +1057,7 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'weight');
             rangeText = getRangeCDC(pctVal, 'weight');
         }
-        summaryBBU = `${hasil.bbu_ref === 'WHO' ? hasil.bbu.toFixed(2) + ' Z' : 'P' + pctVal} (${rangeText})`;
+        summaryBBU = rangeText;
         html += renderCard('⚖️', 'BB/U (Weight-for-Age)', hasil.bbu_ref, hasil.bbu, pctVal, cls, rangeText, null, hasil.bbu_ref_detail);
     }
 
@@ -1072,7 +1072,7 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'stature');
             rangeText = getRangeCDC(pctVal, 'stature');
         }
-        summaryTBU = `${hasil.tbu_ref === 'WHO' ? hasil.tbu.toFixed(2) + ' Z' : 'P' + pctVal} (${rangeText})`;
+        summaryTBU = rangeText;
         html += renderCard('📏', 'TB/U (Height-for-Age)', hasil.tbu_ref, hasil.tbu, pctVal, cls, rangeText, null, hasil.tbu_ref_detail);
     }
 
@@ -1087,12 +1087,12 @@ function hitungSemua() {
             cls = classifyCDC_Percentile(pctVal, 'bmi');
             rangeText = getRangeCDC(pctVal, 'bmi');
         }
-        summaryIMTU = `${hasil.imtu_ref === 'WHO' ? hasil.imtu.toFixed(2) + ' Z' : 'P' + pctVal} (${rangeText})`;
+        summaryIMTU = rangeText;
         html += renderCard('📐', 'IMT/U (BMI-for-Age)', hasil.imtu_ref, hasil.imtu, pctVal, cls, rangeText, `IMT: ${hasil.imt_value.toFixed(2)} kg/m²`, hasil.imtu_ref_detail);
     }
 
     if (hasil.bbtb !== undefined && hasil.bbtb_ref === 'WHO') {
-        summaryBBTB = `${hasil.bbtb.toFixed(2)} Z (${getRangeWHO(hasil.bbtb, 'bbtb')})`;
+        summaryBBTB = getRangeWHO(hasil.bbtb, 'bbtb');
     }
 
     const bbtbMetricHtml = renderBBTBMetricCard(hasil, pBBI);
@@ -1106,7 +1106,7 @@ function hitungSemua() {
             else if (pBBI <= 110) pBBIText = '90-110% BBI';
             else if (pBBI <= 120) pBBIText = '110-120% BBI';
             else pBBIText = '> 120% BBI';
-            summaryBBTB = `${pBBI.toFixed(1)}% (${pBBIText})`;
+            summaryBBTB = pBBIText;
         }
     }
 
