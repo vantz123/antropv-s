@@ -8,7 +8,9 @@ const distDir = path.join(__dirname, 'dist');
 const jsFiles = [
     'growth-data.js',
     'attachment-data.js',
-    'clinical-core.js',
+    'clinical-math.js',
+    'clinical-logic.js',
+    'clinical-ui.js',
     'database-gizi.js',
     'who-charting.js',
     'cdc-charting.js',

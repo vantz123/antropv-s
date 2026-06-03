@@ -14,11 +14,11 @@ async function loadDom() {
   let html = fs.readFileSync(htmlPath, 'utf8');
   html = html.replace(/<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/chart\.js[^>]*><\/script>/i, '');
   html = html.replace(/<link rel="stylesheet" href="styles\.css">/i, '<style></style>');
-  const localScripts = ['growth-data.js','attachment-data.js','clinical-core.js','database-gizi.js','who-charting.js','cdc-charting.js','charting.js','parser.js','ui.js'];
+  const localScripts = ['growth-data.js','attachment-data.js','clinical-math.js','clinical-logic.js','clinical-ui.js','database-gizi.js','who-charting.js','cdc-charting.js','official-charts-calibration.js','charting.js','parser.js','ui.js'];
   for (const scriptName of localScripts) {
     const scriptText = fs.readFileSync(path.join(__dirname, scriptName), 'utf8');
-    const rx = new RegExp(`<script src="${scriptName.replace('.', '\\.') }"[^>]*><\\/script>`, 'i');
-    html = html.replace(rx, `<script>\n${scriptText}\n<\/script>`);
+    const rx = new RegExp(`<script src="${scriptName.replace('.', '\\.')}(?:\\?[^"]*)?"[^>]*><\\/script>`, 'i');
+    html = html.replace(rx, () => `<script>\n${scriptText}\n</script>`);
   }
   const dom = new JSDOM(html, {
     url: 'http://127.0.0.1:8765/index.html',
@@ -87,7 +87,7 @@ function setCase(win, fields) {
   rec('WHO only keeps HA on WHO', win.hasilSementara.haRef === 'WHO', `ref=${win.hasilSementara.haRef}`);
   rec('WHO only keeps BBI available', Number.isFinite(win.hasilSementara.bbi), `bbi=${win.hasilSementara.bbi}`);
   rec('WHO only note mentions fallback app when needed', /fallback app/i.test(win.hasilSementara.bbi_note || ''), win.hasilSementara.bbi_note || '');
-  rec('Audit trail rendered in result', /Audit Trail/.test(doc.getElementById('hasil-antropometri').textContent), 'audit card present');
+  rec('Audit trail rendered in result', /Audit Trail Klinis/.test(doc.getElementById('hasil-antropometri').textContent), 'audit card present');
   rec('Audit trail shows basis usia', /Usia kronologis|Usia koreksi prematur/.test(doc.getElementById('hasil-antropometri').textContent), doc.getElementById('hasil-antropometri').textContent.replace(/\s+/g, ' ').slice(0, 220));
 
   doc.getElementById('calculation_mode').value = 'who_extended';

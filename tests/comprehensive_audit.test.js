@@ -20,7 +20,7 @@ vm.createContext(sandbox);
 
 const scripts = [
     'growth-data.js',
-    'clinical-core.js',
+    'clinical-math.js','clinical-logic.js','clinical-ui.js',
     'official-charts-calibration.js'
 ];
 

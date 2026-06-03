@@ -22,7 +22,7 @@ vm.createContext(sandbox);
 
 const growthData = fs.readFileSync('growth-data.js', 'utf8');
 const dbGizi = fs.readFileSync('database-gizi.js', 'utf8');
-const clinicalCore = fs.readFileSync('clinical-core.js', 'utf8');
+const clinicalCore = fs.readFileSync('clinical-math.js','clinical-logic.js','clinical-ui.js', 'utf8');
 
 vm.runInContext(growthData, sandbox);
 vm.runInContext(dbGizi, sandbox);

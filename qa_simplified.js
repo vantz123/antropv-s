@@ -14,11 +14,11 @@ async function loadDom() {
   let html = fs.readFileSync(htmlPath, 'utf8');
   html = html.replace(/<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/chart\.js[^>]*><\/script>/i, '');
   html = html.replace(/<link rel="stylesheet" href="styles\.css">/i, '<style></style>');
-  const localScripts = ['growth-data.js','attachment-data.js','clinical-core.js','database-gizi.js','who-charting.js','cdc-charting.js','charting.js','parser.js','ui.js'];
+  const localScripts = ['growth-data.js','attachment-data.js','clinical-math.js','clinical-logic.js','clinical-ui.js','database-gizi.js','who-charting.js','cdc-charting.js','official-charts-calibration.js','charting.js','parser.js','ui.js'];
   for (const scriptName of localScripts) {
     const scriptText = fs.readFileSync(path.join(__dirname, scriptName), 'utf8');
-    const rx = new RegExp(`<script src="${scriptName.replace('.', '\\.')}"[^>]*><\\/script>`, 'i');
-    html = html.replace(rx, `<script>\n${scriptText}\n<\/script>`);
+    const rx = new RegExp(`<script src="${scriptName.replace('.', '\\.')}(?:\\?[^"]*)?"[^>]*><\\/script>`, 'i');
+    html = html.replace(rx, () => `<script>\n${scriptText}\n</script>`);
   }
   const dom = new JSDOM(html, {
     url: 'http://127.0.0.1:8765/index.html',
@@ -103,18 +103,18 @@ function setCase(win, fields) {
 
   // WHO chart simplified
   const whoChart = win.WHOChartModule.buildChart(win.hasilSementara, 'tbu', 'male');
-  rec('WHO chart option count is 1', win.WHOChartModule.options.length === 1, `count=${win.WHOChartModule.options.length}`);
-  rec('WHO chart dataset count is 8', whoChart.datasets.length === 8, `count=${whoChart.datasets.length}`);
-  rec('WHO chart viewport <= 24 months', (whoChart.scales.x.max - whoChart.scales.x.min) <= 24, `range=${whoChart.scales.x.min}-${whoChart.scales.x.max}`);
-  rec('WHO chart title simplified', /HA \/ TB-U/.test(whoChart.title), whoChart.title);
+  rec('WHO chart option count is 5', win.WHOChartModule.options.length === 5, `count=${win.WHOChartModule.options.length}`);
+  rec('WHO chart dataset count is 9', whoChart.datasets.length === 9, `count=${whoChart.datasets.length}`);
+  rec('WHO chart viewport <= 60 months', (whoChart.scales.x.max - whoChart.scales.x.min) <= 60, `range=${whoChart.scales.x.min}-${whoChart.scales.x.max}`);
+  rec('WHO chart title simplified', /Length\/Height-for-Age/.test(whoChart.title), whoChart.title);
 
   // CDC chart simplified
   win.hasilSementara = { ...win.hasilSementara, gender: 'female', umur_dipakai: 96, tb: 128 };
   const cdcChart = win.CDCChartModule.buildChart(win.hasilSementara, 'stature', 'female');
-  rec('CDC chart option count is 1', win.CDCChartModule.options.length === 1, `count=${win.CDCChartModule.options.length}`);
-  rec('CDC chart dataset count is 6', cdcChart.datasets.length === 6, `count=${cdcChart.datasets.length}`);
-  rec('CDC chart viewport <= 48 months', (cdcChart.scales.x.max - cdcChart.scales.x.min) <= 48, `range=${cdcChart.scales.x.min}-${cdcChart.scales.x.max}`);
-  rec('CDC chart title simplified', /CDC Categories/.test(cdcChart.title), cdcChart.title);
+  rec('CDC chart option count is 3', win.CDCChartModule.options.length === 3, `count=${win.CDCChartModule.options.length}`);
+  rec('CDC chart dataset count is 11', cdcChart.datasets.length === 11, `count=${cdcChart.datasets.length}`);
+  rec('CDC chart viewport <= 240 months', (cdcChart.scales.x.max - cdcChart.scales.x.min) <= 240, `range=${cdcChart.scales.x.min}-${cdcChart.scales.x.max}`);
+  rec('CDC chart title simplified', /Stature-for-Age/.test(cdcChart.title), cdcChart.title);
 
   // Graph rendering smoke test in DOM
   doc.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));

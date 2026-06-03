@@ -52,13 +52,13 @@ function checkBBUClass(refClass, bbu, bbu_pct) {
     let html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
     html = html.replace(/<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/chart\.js[^>]*><\/script>/i, '');
     html = html.replace(/<link rel="stylesheet" href="styles\.css">/i, '<style></style>');
-    const localScripts = ['growth-data.js','attachment-data.js','clinical-core.js','database-gizi.js','who-charting.js','cdc-charting.js','charting.js','parser.js','ui.js'];
-    for (const s of localScripts) {
-        const txt = fs.readFileSync(path.join(__dirname, s), 'utf8');
-        const rx = new RegExp(`<script src="${s.replace('.', '\\.')}"[^>]*><\\/script>`, 'i');
-        html = html.replace(rx, `<script>\n${txt}\n<\/script>`);
-    }
-    const dom = new JSDOM(html, {
+    const localScripts = ['growth-data.js','attachment-data.js','clinical-math.js','clinical-logic.js','clinical-ui.js','database-gizi.js','who-charting.js','cdc-charting.js','official-charts-calibration.js','charting.js','parser.js','ui.js'];
+  for (const scriptName of localScripts) {
+    const scriptText = fs.readFileSync(path.join(__dirname, scriptName), 'utf8');
+    const rx = new RegExp(`<script src="${scriptName.replace('.', '\\.')}(?:\\?[^"]*)?"[^>]*><\\/script>`, 'i');
+    html = html.replace(rx, () => `<script>\n${scriptText}\n</script>`);
+  }
+  const dom = new JSDOM(html, {
         url: 'http://127.0.0.1:8765/index.html',
         runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true,
         beforeParse(window) {

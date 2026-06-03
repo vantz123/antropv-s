@@ -16,7 +16,7 @@ function loadScript(filename) {
 
 loadScript('growth-data.js');
 loadScript('official-charts-calibration.js');
-loadScript('clinical-core.js');
+loadScript('clinical-math.js','clinical-logic.js','clinical-ui.js');
 
 // Doctor's data:
 // Female, 14 years 3 months = 171 months

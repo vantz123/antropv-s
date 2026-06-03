@@ -8,7 +8,7 @@ const ctx = vm.createContext({
 function loadScript(f) { vm.runInContext(fs.readFileSync(f,'utf8'), ctx); }
 loadScript('growth-data.js');
 loadScript('official-charts-calibration.js');
-loadScript('clinical-core.js');
+loadScript('clinical-math.js','clinical-logic.js','clinical-ui.js');
 
 const W = ctx.window;
 const whoData = W.whoData;

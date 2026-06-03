@@ -16,7 +16,7 @@ function loadScript(filename) {
 
 loadScript('growth-data.js');
 loadScript('official-charts-calibration.js');
-loadScript('clinical-core.js');
+loadScript('clinical-math.js','clinical-logic.js','clinical-ui.js');
 
 // Functions are defined at top scope in the VM context
 const W = ctx.window; // window object for exposed things

@@ -17,7 +17,7 @@ function loadScript(filename) {
 
 loadScript('growth-data.js');
 loadScript('official-charts-calibration.js');
-loadScript('clinical-core.js');
+loadScript('clinical-math.js','clinical-logic.js','clinical-ui.js');
 
 const patientData = {
     gender: 'male',
