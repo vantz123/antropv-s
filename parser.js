@@ -242,9 +242,18 @@
             ukurDate = today;
         }
 
+        // Cari tahu apakah user menggunakan label PB atau TB
+        let keywordPosisi = '';
+        const tbMatch = text.match(/(?:^|[\n,;]|\s)(tb|pb|tinggi(?:\s*badan)?|panjang(?:\s*badan)?|height|length)\s*[:=]?\s*\d+/i);
+        if (tbMatch) {
+            const label = tbMatch[1].toLowerCase();
+            if (label === 'pb' || label.includes('panjang') || label === 'length') keywordPosisi = 'terlentang';
+            else if (label === 'tb' || label.includes('tinggi') || label === 'height') keywordPosisi = 'berdiri';
+        }
+
         // Hindari deteksi posisi dari teks bila bertentangan dengan usia
-        const explicitTerlentang = /\b(terlentang|supine|recumbent|posisi\s*tidur|berbaring)\b/i.test(text);
-        const explicitBerdiri = /\b(berdiri|standing|posisi\s*berdiri)\b/i.test(text);
+        const explicitTerlentang = /\b(terlentang|supine|recumbent|posisi\s*tidur|berbaring)\b/i.test(text) || keywordPosisi === 'terlentang';
+        const explicitBerdiri = /\b(berdiri|standing|posisi\s*berdiri)\b/i.test(text) || keywordPosisi === 'berdiri';
         if (explicitTerlentang) document.getElementById('posisi').value = 'terlentang';
         else if (explicitBerdiri) document.getElementById('posisi').value = 'berdiri';
 
