@@ -5,8 +5,7 @@
   "main": "attachment-data.js",
   "scripts": {
     "test": "jest",
-    "build": "node build.js",
-    "dev": "next dev"
+    "build": "node build.js"
   },
   "keywords": [],
   "author": "",

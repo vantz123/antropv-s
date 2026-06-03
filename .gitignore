@@ -1,0 +1,19 @@
+node_modules/
+.venv/
+dist/
+*.pdf
+.DS_Store
+Thumbs.db
+
+# Dev/test files (not needed for production)
+test_*.js
+update_tests*.js
+debug*.js
+fix_*.js
+qa_*.js
+audit_*.js
+training_data.json
+QA_RESULTS.txt
+who_bounds*.json
+replace_purple.py
+split_core.js
