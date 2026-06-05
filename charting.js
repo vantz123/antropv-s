@@ -539,7 +539,7 @@ window.chartInstancesList = [];
         const chartKey = `${activeRef}_${gender}_${normalizedInd}`;
 
         // Jika data kalibrasi PDF resmi tersedia
-        if (window.OfficialChartsDB && window.OfficialChartsDB[chartKey]) {
+        if (window.OfficialChartsDB && (window.OfficialChartsDB[chartKey] || window.OfficialChartsDB[chartKey + '_left'])) {
             await downloadOfficialChartPDF(chartKey, patient, activeRef, indicator);
         } else {
             // Fallback: Gunakan Chart.js seperti semula jika PDF belum dikalibrasi
@@ -549,7 +549,12 @@ window.chartInstancesList = [];
     }
 
     async function downloadOfficialChartPDF(chartKey, patient, activeRef, indicator) {
-        const chartConfig = window.OfficialChartsDB[chartKey];
+        // Resolve split configs correctly early on
+        let chartConfig = window.OfficialChartsDB[chartKey];
+        if (!chartConfig && window.OfficialChartsDB[chartKey + '_left']) {
+            chartConfig = window.OfficialChartsDB[chartKey + '_left']; // Use left just to get PDF URL
+        }
+
         if (!window.pdfjsLib) {
             alert("Error: Library PDF.js tidak dimuat.");
             return;
@@ -626,7 +631,7 @@ window.chartInstancesList = [];
             // When age>=138 but height < right grid's yMin, fall back to left grid
             const getResolvedConfig = (key, xVal, yVal) => {
                 let resolvedKey = key;
-                if (key === `cdc_female_stature` || key === `cdc_male_stature`) {
+                if (key === 'cdc_female_stature' || key === 'cdc_male_stature' || key === 'cdc_female_weight' || key === 'cdc_male_weight') {
                     if (xVal < 138) {
                         resolvedKey = `${key}_left`;
                     } else {
@@ -720,25 +725,29 @@ window.chartInstancesList = [];
                 }
             };
 
-            // Jika ini grafik CDC Stature/Weight (karena ada 2 grid dalam 1 PDF), gambar semuanya!
+            // Jika ini grafik CDC Stature/Weight (karena ada 2 grid dalam 1 PDF), gambar sesuai indikator yang dipilih
             if (activeRef === 'cdc' && (indicator === 'stature' || indicator === 'tbu' || indicator === 'weight' || indicator === 'bbu')) {
                 const statKey = `cdc_${patient.gender}_stature`;
                 const weightKey = `cdc_${patient.gender}_weight`;
 
-                // Stature Grid Dots
-                drawDot(statKey, patient.umur_dipakai, patient.tb, `TB/U (${Number(patient.tb).toFixed(1)}cm)`, 'red', 'tr');
-                if (Number.isFinite(patient.haMonth)) {
-                    drawDot(statKey, patient.haMonth, patient.tb, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue', 'tl');
+                if (indicator === 'stature' || indicator === 'tbu') {
+                    // Stature Grid Dots
+                    drawDot(statKey, patient.umur_dipakai, patient.tb, `TB/U (${Number(patient.tb).toFixed(1)}cm)`, 'red', 'tr');
+                    if (Number.isFinite(patient.haMonth)) {
+                        drawDot(statKey, patient.haMonth, patient.tb, `HA (${formatAgeIndonesian(patient.haMonth)})`, 'blue', 'tl');
+                    }
                 }
 
-                // Weight Grid Dots
-                drawDot(weightKey, patient.umur_dipakai, patient.bbs, `BB/U (${Number(patient.bbs).toFixed(1)}kg)`, 'red', 'tr');
-                if (Number.isFinite(patient.waMonth)) {
-                    drawDot(weightKey, patient.waMonth, patient.bbs, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue', 'tl');
-                }
-                if (Number.isFinite(patient.bbi)) {
-                    const bbiX = Number.isFinite(patient.haMonth) ? patient.haMonth : patient.umur_dipakai;
-                    drawDot(weightKey, bbiX, patient.bbi, `BBI (${Number(patient.bbi).toFixed(1)}kg)`, 'green', 'br');
+                if (indicator === 'weight' || indicator === 'bbu') {
+                    // Weight Grid Dots
+                    drawDot(weightKey, patient.umur_dipakai, patient.bbs, `BB/U (${Number(patient.bbs).toFixed(1)}kg)`, 'red', 'tr');
+                    if (Number.isFinite(patient.waMonth)) {
+                        drawDot(weightKey, patient.waMonth, patient.bbs, `WA (${formatAgeIndonesian(patient.waMonth)})`, 'blue', 'tl');
+                    }
+                    if (Number.isFinite(patient.bbi)) {
+                        const bbiX = Number.isFinite(patient.haMonth) ? patient.haMonth : patient.umur_dipakai;
+                        drawDot(weightKey, bbiX, patient.bbi, `BBI (${Number(patient.bbi).toFixed(1)}kg)`, 'green', 'br');
+                    }
                 }
             } else {
                 // Untuk WHO / CDC Chart lainnya (Single Grid)

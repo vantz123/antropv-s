@@ -17,3 +17,5 @@ QA_RESULTS.txt
 who_bounds*.json
 replace_purple.py
 split_core.js
+
+.vercel
