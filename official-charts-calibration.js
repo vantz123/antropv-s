@@ -20,8 +20,8 @@ window.OfficialChartsDB = {
     },
     "cdc_female_stature_right": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
-        "mathBounds": { "xMin": 138, "xMax": 240, "yMin": 150, "yMax": 180 },
-        "pixelBounds": { "xMin": 614.5, "xMax": 979.3, "yMin": 567.5, "yMax": 325.0 }
+        "mathBounds": {"xMin": 138, "xMax": 240, "yMin": 150, "yMax": 190},
+        "pixelBounds": {"xMin": 626.2, "xMax": 991.2, "yMin": 567.5, "yMax": 245.4}
     },
     "cdc_female_weight_left": {
         "pdfUrl": "assets/pdfs/cdc_female_stature.pdf",
@@ -45,8 +45,8 @@ window.OfficialChartsDB = {
     },
     "cdc_male_stature_right": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
-        "mathBounds": { "xMin": 138, "xMax": 240, "yMin": 150, "yMax": 190 },
-        "pixelBounds": { "xMin": 614.5, "xMax": 979.3, "yMin": 567.5, "yMax": 245.4 }
+        "mathBounds": {"xMin": 138, "xMax": 240, "yMin": 150, "yMax": 190},
+        "pixelBounds": {"xMin": 614.5, "xMax": 979.3, "yMin": 567.5, "yMax": 245.4}
     },
     "cdc_male_weight_left": {
         "pdfUrl": "assets/pdfs/cdc_male_stature.pdf",
@@ -119,14 +119,12 @@ window.OfficialChartsDB = {
 window.calculateOfficialPixelCoords = function (chartKey, xAxisValue, yAxisValue) {
     let resolvedKey = chartKey;
 
-    // Split coordinate grids dynamically for CDC Stature based on Age in months (11.5 years = 138 months)
-    // With fallback: if age>=138 but height < right grid's yMin, use left grid instead
+    // Split coordinate grids dynamically for CDC Stature and Weight based on Age in months (11.5 years = 138 months)
     if (chartKey === 'cdc_female_stature' || chartKey === 'cdc_male_stature' || chartKey === 'cdc_female_weight' || chartKey === 'cdc_male_weight') {
         if (xAxisValue < 138) {
             resolvedKey = `${chartKey}_left`;
         } else {
-            const rightChart = window.OfficialChartsDB[`${chartKey}_right`];
-            resolvedKey = (yAxisValue < rightChart.mathBounds.yMin) ? `${chartKey}_left` : `${chartKey}_right`;
+            resolvedKey = `${chartKey}_right`;
         }
     }
 
